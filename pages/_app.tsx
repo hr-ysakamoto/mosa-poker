@@ -2,7 +2,7 @@ import * as React from "react";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Container } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import "../styles/global.scss";
 import theme from "../lib/theme";
