@@ -21,13 +21,12 @@ const App = (props: MyAppProps) => {
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <Head>
-          <title>mosa poker!</title>
+          <title>Mosa-Poker</title>
         </Head>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Container maxWidth="xl">
+        <main>
           <Component {...pageProps} />
-        </Container>
+        </main>
       </ThemeProvider>
     </CacheProvider>
   );
