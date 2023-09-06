@@ -3,6 +3,8 @@ import { Auth, Dashboard } from "../components";
 import { useEffect } from "react";
 import useStore from "../store";
 import { supabase } from "../utils/supabase";
+import { Create } from "@mui/icons-material";
+import { CreateRoom } from "../components/CreateRoom";
 
 export default function Index() {
   const session = useStore((state) => state.session);
@@ -18,6 +20,9 @@ export default function Index() {
   }, [setSession]);
 
   return (
-    <Layout title="Mosa-Poker">{!session ? <Auth /> : <Dashboard />}</Layout>
+    // <Layout title="Mosa-Poker">{!session ? <Auth /> : <Dashboard />}</Layout>
+    <Layout title="Mosa-Poker">
+      <CreateRoom />
+    </Layout>
   );
 }
