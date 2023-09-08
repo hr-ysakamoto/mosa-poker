@@ -1,5 +1,5 @@
 import { Layout } from "../components/Layout";
-import { Auth, Dashboard } from "../components";
+import { Auth } from "../components";
 import { useEffect } from "react";
 import useStore from "../store";
 import { supabase } from "../utils/supabase";

@@ -7,7 +7,6 @@ export const useMutateRoom = () => {
     async (room: Omit<Room, "id" | "created_at">) => {
       const { data, error } = await supabase.from("rooms").insert(room);
       if (error) throw new Error(error.message);
-      console.log({ data });
       return data;
     },
     {
