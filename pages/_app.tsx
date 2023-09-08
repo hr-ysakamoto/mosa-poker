@@ -7,6 +7,17 @@ import { CacheProvider, EmotionCache } from "@emotion/react";
 import "../styles/global.scss";
 import theme from "../lib/theme";
 import createEmotionCache from "../lib/createEmotionCache";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      suspense: true,
+    },
+  },
+});
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -18,17 +29,19 @@ const clientSideEmotionCache = createEmotionCache();
 const App = (props: MyAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={theme}>
-        <Head>
-          <title>Mosa-Poker</title>
-        </Head>
-        <CssBaseline />
-        <main>
-          <Component {...pageProps} />
-        </main>
-      </ThemeProvider>
-    </CacheProvider>
+    <QueryClientProvider client={queryClient}>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={theme}>
+          <Head>
+            <title>Mosa-Poker</title>
+          </Head>
+          <CssBaseline />
+          <main>
+            <Component {...pageProps} />
+          </main>
+        </ThemeProvider>
+      </CacheProvider>
+    </QueryClientProvider>
   );
 };
 
