@@ -1,15 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "./utils/supabase";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse } from "next/server";
 
-export const config = {
-  matcher: ["/room/:path*"],
-};
+import type { NextRequest } from "next/server";
+import type { Database } from "./schema";
 
 export async function middleware(req: NextRequest) {
-  const session = await supabase.auth.getSession();
-  console.log({ session });
-  if (session) return NextResponse.next();
-  const url = req.nextUrl;
-  url.pathname = "/";
-  return NextResponse.redirect(url);
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient<Database>({ req, res });
+  await supabase.auth.getSession();
+  return res;
 }
