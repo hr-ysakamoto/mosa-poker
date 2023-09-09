@@ -2,15 +2,18 @@ import { FC } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { supabase } from "../utils/supabase";
 import { CardSlot, Hand } from "./";
+import { useRouter } from "next/router";
 
-const signOut = () => {
-  supabase.auth.signOut();
-};
 const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
 const emojis = ["😰", "😞", "😐", "😀", "😊"];
 const users = ["Taro", "Jiro", "Saburo", "Shiro"];
 
 export const Dashboard: FC = () => {
+  const router = useRouter();
+  const signOut = () => {
+    supabase.auth.signOut();
+    router.push("/");
+  };
   return (
     <>
       <Button onClick={signOut}>Log Out</Button>

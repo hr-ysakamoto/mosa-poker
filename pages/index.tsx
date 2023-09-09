@@ -3,7 +3,7 @@ import { Auth } from "../components";
 import { useEffect } from "react";
 import useStore from "../store";
 import { supabase } from "../utils/supabase";
-import { CreateRoom } from "../components/CreateRoom";
+import { CreateRoomForm } from "../components/CreateRoomForm";
 
 export default function Index() {
   const session = useStore((state) => state.session);
@@ -19,9 +19,8 @@ export default function Index() {
   }, [setSession]);
 
   return (
-    <Layout title="Mosa-Poker">{!session ? <Auth /> : <CreateRoom />}</Layout>
-    // <Layout title="Mosa-Poker">
-    //   <CreateRoom />
-    // </Layout>
+    <Layout title="Mosa-Poker">
+      {!session ? <Auth /> : <CreateRoomForm />}
+    </Layout>
   );
 }

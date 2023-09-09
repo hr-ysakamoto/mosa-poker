@@ -1,4 +1,4 @@
-import { UseMutationResult, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { supabase } from "../utils/supabase";
 import { Room } from "../types";
 import useStore from "../store";
@@ -16,12 +16,12 @@ export const useMutateRoom = () => {
         .order("created_at", { ascending: false })
         .select()
         .limit(1)
-        .maybeSingle();
+        .single();
       if (error) throw new Error(error.message);
       return data;
     },
     {
-      onSuccess: (data) => {
+      onSuccess: (data: Room) => {
         queryClient.setQueryData<Room>(["room"], data);
       },
       onError: (err: any) => {

@@ -21,7 +21,7 @@ export const useQueryRoom = () => {
     console.log({ data });
     return data;
   };
-  return useQuery<Room, Error>({
+  return useQuery<Room | undefined, Error>({
     queryKey: ["room"],
     queryFn: getRoom,
     staleTime: Infinity,
