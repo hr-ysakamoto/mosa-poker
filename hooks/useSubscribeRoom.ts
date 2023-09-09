@@ -1,10 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "react-query";
 import { supabase } from "../utils/supabase";
-import {
-  RealtimePostgresDeletePayload,
-  RealtimePostgresInsertPayload,
-} from "@supabase/supabase-js";
 import { Room } from "../types";
 
 export const useSubscribeRoom = () => {
@@ -15,31 +11,74 @@ export const useSubscribeRoom = () => {
       .on(
         "postgres_changes",
         {
-          event: "UPDATE", // "INSERT" | "UPDATE" | "DELETE" のように特定イベントだけの購読も可能
+          event: "*",
           schema: "public",
           table: "rooms",
         },
         (payload) => {
-          console.log({ payload });
-          let previous = queryClient.getQueryData<Room[]>(["rooms"]);
-          if (!previous) {
-            previous = [];
+          if (payload.eventType === "INSERT") {
+            console.log("insert payload: ", payload);
+            queryClient.setQueryData<Room>(["room"], {
+              id: payload.new.id,
+              created_at: payload.new.created_at,
+              owner_id: payload.new.owner_id,
+              name: payload.new.name,
+            });
+          } else if (payload.eventType === "UPDATE") {
+            queryClient.setQueryData<Room>(["room"], {
+              id: payload.new.id,
+              created_at: payload.new.created_at,
+              owner_id: payload.new.owner_id,
+              name: payload.new.name,
+            });
+          } else if (payload.eventType === "DELETE") {
+            queryClient.setQueryData<Room | null>(["room"], null);
           }
-          queryClient.setQueryData(
-            ["rooms"],
-            previous.map((room) =>
-              room.id === payload.new.id
-                ? {
-                    id: payload.new.id,
-                    created_at: payload.new.created_at,
-                    owner_id: payload.new.user_id,
-                    name: payload.new.name,
-                  }
-                : room
-            )
-          );
         }
       )
+      // .on(
+      //   "postgres_changes",
+      //   {
+      //     event: "DELETE",
+      //     schema: "public",
+      //     table: "rooms",
+      //   },
+      //   (payload) => {
+      //     let previous = queryClient.getQueryData<Room[]>(["rooms"]);
+      //     if (!previous) {
+      //       previous = [];
+      //     }
+      //     const newRooms = previous.filter(
+      //       (room) => room.id !== payload.old.id
+      //     );
+      //     queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+      //   }
+      // )
+      // .on(
+      //   "postgres_changes",
+      //   {
+      //     event: "UPDATE",
+      //     schema: "public",
+      //     table: "rooms",
+      //   },
+      //   (payload) => {
+      //     let previous = queryClient.getQueryData<Room[]>(["rooms"]);
+      //     if (!previous) {
+      //       previous = [];
+      //     }
+      //     const newRooms = previous.map((room) =>
+      //       room.id === payload.new.id
+      //         ? {
+      //             id: payload.new.id,
+      //             created_at: payload.new.created_at,
+      //             owner_id: payload.new.owner_id,
+      //             name: payload.new.name,
+      //           }
+      //         : room
+      //     );
+      //     queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+      //   }
+      // )
       .subscribe();
     return () => {
       supabase.removeChannel(subscription);

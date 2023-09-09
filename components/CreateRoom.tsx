@@ -1,36 +1,29 @@
 import { FC, Suspense, memo } from "react";
-import {
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, CircularProgress, Stack, TextField } from "@mui/material";
 import useStore from "../store";
-import { useMutateRoom } from "../hooks/useMutateRoom";
-import { useQueryRoom } from "../hooks/useQueryRoom";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorIcon from "@mui/icons-material/Error";
 import { RoomName } from "./RoomName";
 import { useRouter } from "next/router";
+import { useMutateRoom } from "../hooks/useMutateRoom";
+import { v4 } from "uuid";
 
 export const CreateRoomMemo: FC = () => {
-  const session = useStore((state) => state.session);
   const editedRoom = useStore((state) => state.editedRoom);
   const update = useStore((state) => state.updateEditedRoom);
   const router = useRouter();
-  const { createRoomMutation, deleteRoomMutation } = useMutateRoom();
+  const { createRoomMutation } = useMutateRoom();
+  const session = useStore((state) => state.session);
 
   const handleClick = async (e: any) => {
     e.preventDefault();
-    await deleteRoomMutation.mutateAsync(session?.user?.id!);
-    await createRoomMutation.mutateAsync(
-      {
-        ...editedRoom,
-        owner_id: session?.user?.id,
-      },
-      { onSuccess: () => router.push("/room/test") }
-    );
+    const uuid = v4();
+    await createRoomMutation.mutateAsync({
+      ...editedRoom,
+      id: uuid,
+      owner_id: session?.user?.id,
+    });
+    router.push(`/room/${uuid}`);
   };
 
   return (
@@ -46,7 +39,6 @@ export const CreateRoomMemo: FC = () => {
             <RoomName />
           </Suspense>
         </ErrorBoundary>
-
         <TextField
           sx={{ pb: 3 }}
           id="outlined-basic"
