@@ -8,7 +8,6 @@ import { Dashboard } from "../../components/Dashboard";
 export default function Room() {
   const router = useRouter();
   const { roomId } = router.query;
-
   const { data: room } = useQueryRoom();
   useSubscribeRoom();
 

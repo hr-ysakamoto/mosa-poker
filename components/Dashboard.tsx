@@ -5,7 +5,7 @@ import { CardSlot, Hand } from "./";
 import { useRouter } from "next/router";
 
 const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-const emojis = ["😰", "😞", "😐", "😀", "😊"];
+// const emojis = ["😰", "😞", "😐", "😀", "😊"];
 const users = ["Taro", "Jiro", "Saburo", "Shiro"];
 
 export const Dashboard: FC = () => {

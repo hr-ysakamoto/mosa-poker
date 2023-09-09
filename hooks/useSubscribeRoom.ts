@@ -32,7 +32,7 @@ export const useSubscribeRoom = () => {
               name: payload.new.name,
             });
           } else if (payload.eventType === "DELETE") {
-            queryClient.setQueryData<Room | null>(["room"], null);
+            queryClient.setQueryData<Room | undefined>(["room"], undefined);
           }
         }
       )

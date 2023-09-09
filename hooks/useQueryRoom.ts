@@ -5,7 +5,7 @@ import useStore from "../store";
 
 export const useQueryRoom = () => {
   const session = useStore((state) => state.session);
-  const getRoom = async () => {
+  const getRoom = async (): Promise<Room> => {
     const { data, error } = await supabase
       .from("rooms")
       .select()
@@ -17,11 +17,9 @@ export const useQueryRoom = () => {
     if (error) {
       throw new Error(error.message);
     }
-
-    console.log({ data });
     return data;
   };
-  return useQuery<Room | undefined, Error>({
+  return useQuery<Room, Error>({
     queryKey: ["room"],
     queryFn: getRoom,
     staleTime: Infinity,
