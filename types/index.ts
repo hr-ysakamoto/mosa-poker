@@ -15,3 +15,8 @@ export type Profile = {
   user_name: string;
   avatar_url?: string;
 };
+
+export type EditedProfile = {
+  user_name: string;
+  avatar_url?: string;
+};

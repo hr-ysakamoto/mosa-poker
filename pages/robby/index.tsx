@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 import { v4 } from "uuid";
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
+import EditIcon from "@mui/icons-material/Edit";
 import useStore from "../../store";
 
 export default function Robby() {
@@ -32,6 +39,11 @@ export default function Robby() {
     router.push(`/room/${uuid}`);
   };
 
+  const handleEditClick = (e: any) => {
+    e.preventDefault();
+    router.push("/profile");
+  };
+
   useEffect(() => {
     if (!user) {
       router.replace("/");
@@ -43,8 +55,11 @@ export default function Robby() {
       <Stack sx={{ m: 5 }}>
         {isClient && (
           <>
-            <Typography variant="body1" sx={{ pb: 3 }}>
-              username: {profile?.user_name}
+            <Typography sx={{ m: 2 }} variant="h5" textAlign="center">
+              {profile?.user_name}
+              <IconButton sx={{ ml: 1 }} size="small" onClick={handleEditClick}>
+                <EditIcon />
+              </IconButton>
             </Typography>
           </>
         )}
