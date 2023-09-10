@@ -43,16 +43,17 @@ export default function Room() {
     async function createAdmission() {
       console.log("fire");
       if (admissions && user && roomId) {
-        const admission = admissions.find(
+        const self = admissions.filter(
           (admission) =>
             admission.user_id === user.id && admission.room_id === roomId
         );
-        console.log({ admission });
-        if (admission) return;
-        await createAdmissionMutation.mutateAsync({
-          user_id: user.id,
-          room_id: roomId,
-        });
+        console.log({ self });
+        if (self.length === 0) {
+          await createAdmissionMutation.mutateAsync({
+            user_id: user.id,
+            room_id: roomId,
+          });
+        }
       }
     }
     createAdmission();
