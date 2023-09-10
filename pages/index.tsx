@@ -8,7 +8,6 @@ import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 export default function Index() {
   const user = useUser();
   const router = useRouter();
-  console.log({ user });
   useEffect(() => {
     if (user) router.push("/robby");
   }, [user, router]);

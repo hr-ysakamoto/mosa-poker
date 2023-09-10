@@ -6,7 +6,6 @@ export const useMutateRoom = () => {
   const user = useUser();
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
-  console.log({ user });
 
   const createRoomMutation = useMutation(
     async (room: Omit<Room, "created_at">) => {

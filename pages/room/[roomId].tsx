@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
-import { useUser } from "@supabase/auth-helpers-react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { CardSlot, Hand } from "../../components";
 
 export default function Room() {
@@ -12,18 +12,14 @@ export default function Room() {
   const user = useUser();
   const supabase = useSupabaseClient();
   const [roomId, setRoomId] = useState<string>("");
-  const [roomName, setRoomName] = useState<string>("");
 
   const { data: rooms } = useQueryRoom();
-  console.log({ rooms });
   useSubscribeRoom();
 
   useEffect(() => {
     if (router.asPath !== router.route) {
       const roomId = String(router.query.roomId);
       setRoomId(roomId);
-      const room = rooms?.find((room) => room.id === roomId);
-      setRoomName(room?.name || "");
     }
   }, [rooms, router]);
 
@@ -44,6 +40,10 @@ export default function Room() {
     router.push("/");
   };
 
+  const roomName = () => {
+    return rooms?.find((room) => room.id === roomId)?.name || "";
+  };
+
   const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
   // const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const users = ["Taro", "Jiro", "Saburo", "Shiro"];
@@ -53,7 +53,7 @@ export default function Room() {
       <Stack alignItems="center">
         <Typography variant="body1">Room ID: {roomId}</Typography>
         <Typography sx={{ p: 2 }} variant="h4">
-          {roomName}
+          {roomName()}
         </Typography>
         <Button onClick={handleSignOut}>Log Out</Button>
         <Stack

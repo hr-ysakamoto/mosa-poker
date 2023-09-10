@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import { CreateRoomForm } from "../../components/CreateRoomForm";
+import { CreateRoomForm } from "../../components";
 import { useUser } from "@supabase/auth-helpers-react";
 
 export default function Robby() {

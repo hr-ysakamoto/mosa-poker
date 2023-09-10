@@ -18,7 +18,6 @@ export const useSubscribeRoom = () => {
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            console.log("insert payload: ", payload);
             let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
             if (!previousRooms) {
               previousRooms = [];

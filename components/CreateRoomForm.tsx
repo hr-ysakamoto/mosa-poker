@@ -4,13 +4,14 @@ import { v4 } from "uuid";
 import { Button, Stack, TextField } from "@mui/material";
 import { useMutateRoom } from "../hooks/useMutateRoom";
 import useStore from "../store";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export const CreateRoomFormMemo: FC = () => {
   const editedRoom = useStore((state) => state.editedRoom);
   const update = useStore((state) => state.updateEditedRoom);
   const router = useRouter();
+  const user = useUser();
   const { createRoomMutation } = useMutateRoom();
-  const session = useStore((state) => state.session);
 
   /**
    * @description Create a room and redirect to the room page
@@ -22,7 +23,7 @@ export const CreateRoomFormMemo: FC = () => {
     await createRoomMutation.mutateAsync({
       ...editedRoom,
       id: uuid,
-      owner_id: session?.user?.id,
+      owner_id: user?.id,
     });
     router.push(`/room/${uuid}`);
   };
