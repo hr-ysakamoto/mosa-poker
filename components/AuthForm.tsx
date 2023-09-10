@@ -11,7 +11,9 @@ export const Auth: FC = () => {
 
   useEffect(() => {
     console.log({ user });
-    if (user) router.replace("/robby");
+    if (user) {
+      router.replace("/robby");
+    }
   }, [user]);
 
   return (

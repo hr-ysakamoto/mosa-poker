@@ -5,15 +5,23 @@ import useStore from "../store";
 
 export const useQueryRoom = () => {
   const session = useStore((state) => state.session);
+  console.log({ session });
   const getRoom = async (): Promise<Room> => {
+    // const { data, error } = await supabase
+    //   .from("rooms")
+    //   .select()
+    //   .eq("owner_id", session?.user?.id)
+    //   .order("created_at", { ascending: false })
+    //   .limit(1)
+    //   .maybeSingle();
     const { data, error } = await supabase
       .from("rooms")
       .select()
-      .eq("owner_id", session!.user?.id)
+      //.eq("owner_id", session!.user?.id)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-
+    console.log({ data });
     if (error) {
       throw new Error(error.message);
     }

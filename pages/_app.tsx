@@ -10,12 +10,14 @@ import createEmotionCache from "../lib/createEmotionCache";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { supabase } from "../utils/supabase";
+import useStore from "../store";
+import { useRouter } from "next/router";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
       suspense: true,
     },
   },
@@ -29,7 +31,20 @@ interface MyAppProps extends AppProps {
 const clientSideEmotionCache = createEmotionCache();
 
 const App = (props: MyAppProps) => {
+  const session = useStore((state) => state.session);
+  const setSession = useStore((state) => state.setSession);
+  const router = useRouter();
+
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  React.useEffect(() => {
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
+    })();
+  }, [setSession]);
   return (
     <SessionContextProvider
       supabaseClient={supabase}
