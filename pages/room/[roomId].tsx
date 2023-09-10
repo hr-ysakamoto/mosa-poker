@@ -11,16 +11,20 @@ import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
+import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 
 export default function Room() {
   const router = useRouter();
   const user = useUser();
   const [roomId, setRoomId] = useState<string>("");
-  const { deleteAdmissionMutation } = useMutateAdmission();
+  const { createAdmissionMutation, deleteAdmissionMutation } =
+    useMutateAdmission();
 
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
   useSubscribeRoom();
+  useSubscribeAdmissions();
+  console.log({ admissions });
 
   useEffect(() => {
     if (router.asPath !== router.route) {
@@ -34,6 +38,25 @@ export default function Room() {
       router.replace("/");
     }
   }, [router, user]);
+
+  useEffect(() => {
+    async function createAdmission() {
+      console.log("fire");
+      if (admissions && user && roomId) {
+        const admission = admissions.find(
+          (admission) =>
+            admission.user_id === user.id && admission.room_id === roomId
+        );
+        console.log({ admission });
+        if (admission) return;
+        await createAdmissionMutation.mutateAsync({
+          user_id: user.id,
+          room_id: roomId,
+        });
+      }
+    }
+    createAdmission();
+  }, [admissions, user, createAdmissionMutation, roomId]);
 
   const handleExitClick = async (e: any) => {
     e.preventDefault();
@@ -90,7 +113,8 @@ export default function Room() {
         </Stack>
         <Box sx={{ p: 3 }}>
           <Stack direction="row" justifyContent="center">
-            {admissions?.map((admission) => {
+            {admissions?.flatMap((admission) => {
+              if (admission.room_id !== roomId) return [];
               const user = userProfiles.find(
                 (profile) => profile.id === admission.user_id
               );
