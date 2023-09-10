@@ -8,3 +8,10 @@ export type Room = {
 export type EditedRoom = {
   name: string;
 };
+
+export type Profile = {
+  id: string;
+  created_at: string;
+  user_name: string;
+  avatar_url?: string;
+};

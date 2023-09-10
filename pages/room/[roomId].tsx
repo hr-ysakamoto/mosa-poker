@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { CardSlot, Hand } from "../../components";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import CurtainsIcon from "@mui/icons-material/Curtains";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 export default function Room() {
   const router = useRouter();
@@ -34,7 +38,7 @@ export default function Room() {
     router.push("/robby");
   };
 
-  const handleSignOut = (e: any) => {
+  const handleSignOutClick = (e: any) => {
     e.preventDefault();
     supabase.auth.signOut();
     router.push("/");
@@ -51,19 +55,43 @@ export default function Room() {
   return (
     roomId && (
       <Stack alignItems="center">
-        <Typography variant="body1">Room ID: {roomId}</Typography>
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="body1">Room ID: {roomId}</Typography>
+          <Button startIcon={<MeetingRoomIcon />} onClick={handleExitClick}>
+            EXIT
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<LogoutIcon />}
+            onClick={handleSignOutClick}
+          >
+            LOGOUT
+          </Button>
+        </Stack>
         <Typography sx={{ p: 2 }} variant="h4">
           {roomName()}
         </Typography>
-        <Button onClick={handleSignOut}>Log Out</Button>
         <Stack
           sx={{ p: 3 }}
           spacing={2}
           direction="row"
           justifyContent="center"
         >
-          <Button variant="outlined">reveal</Button>
-          <Button variant="outlined">reset</Button>
+          <Button variant="outlined" size="large" startIcon={<CurtainsIcon />}>
+            REVEAL
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<RestartAltIcon />}
+          >
+            RESET
+          </Button>
         </Stack>
         <Box sx={{ p: 3 }}>
           <Stack direction="row" justifyContent="center">
@@ -80,13 +108,6 @@ export default function Room() {
             <Hand key={value} value={value.toString()} />
           ))}
         </Stack>
-        <Button
-          style={{ width: 20 }}
-          variant="contained"
-          onClick={handleExitClick}
-        >
-          Exit
-        </Button>
       </Stack>
     )
   );
