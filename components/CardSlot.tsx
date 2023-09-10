@@ -1,3 +1,4 @@
+import { Stack } from "@mui/material";
 import React from "react";
 
 const common = {
@@ -6,7 +7,7 @@ const common = {
   height: "112px",
   width: "80px",
   borderRadius: "8px",
-  margin: "10px",
+  margin: "5px",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -23,11 +24,19 @@ const down = {
 
 interface CardSlotProps {
   state: "up" | "down";
+  name: string;
   value: string;
 }
 
-export const CardSlot = ({ state, value }: CardSlotProps) => {
+export const CardSlot = ({ state, name, value }: CardSlotProps) => {
   return (
-    <div style={state === "up" ? up : down}>{state === "up" ? value : ""}</div>
+    <>
+      <Stack direction="column">
+        <div style={state === "up" ? up : down}>
+          {state === "up" ? value : ""}
+        </div>
+        <p style={{ margin: 0, textAlign: "center", fontSize: 15 }}>{name}</p>
+      </Stack>
+    </>
   );
 };

@@ -6,6 +6,7 @@ import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CurtainsIcon from "@mui/icons-material/Curtains";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
+import { useQueryAdmission } from "../../hooks/useQueryAdmission";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
@@ -18,6 +19,7 @@ export default function Room() {
   const { deleteAdmissionMutation } = useMutateAdmission();
 
   const { data: rooms } = useQueryRoom();
+  const { data: admissions } = useQueryAdmission();
   useSubscribeRoom();
 
   useEffect(() => {
@@ -45,7 +47,11 @@ export default function Room() {
 
   const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
   // const emojis = ["😰", "😞", "😐", "😀", "😊"];
-  const users = ["Taro", "Jiro", "Saburo", "Shiro"];
+  const userProfiles = [
+    { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki Sakamoto" },
+    { id: "", name: "Jiro" },
+    { id: "", name: "Saburo" },
+  ];
 
   return (
     roomId && (
@@ -84,9 +90,19 @@ export default function Room() {
         </Stack>
         <Box sx={{ p: 3 }}>
           <Stack direction="row" justifyContent="center">
-            {users.map((user) => (
-              <CardSlot key={user} state="up" value={"😊"} />
-            ))}
+            {admissions?.map((admission) => {
+              const user = userProfiles.find(
+                (profile) => profile.id === admission.user_id
+              );
+              return (
+                <CardSlot
+                  key={admission.id}
+                  state="up"
+                  name={user?.name || ""}
+                  value={"😅"}
+                />
+              );
+            })}
           </Stack>
         </Box>
         <Typography variant="h5" align="center">
