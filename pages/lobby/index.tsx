@@ -11,15 +11,20 @@ import {
 } from "@mui/material";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
+import { useQueryAdmission } from "../../hooks/useQueryAdmission";
 import EditIcon from "@mui/icons-material/Edit";
 import useStore from "../../store";
+import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 
-export default function Robby() {
+export default function Lobby() {
   const editedRoom = useStore((state) => state.editedRoom);
   const update = useStore((state) => state.updateEditedRoom);
   const { createRoomMutation } = useMutateRoom();
+  const { createAdmissionMutation } = useMutateAdmission();
   const { data: profile } = useQueryProfile();
-  console.log({ profile });
+  const { data: admissions } = useQueryAdmission();
+  console.log({ admissions });
+
   const user = useUser();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
@@ -28,7 +33,7 @@ export default function Robby() {
     setIsClient(true);
   }, []);
 
-  const handleClick = async (e: any) => {
+  const handleCreateClick = async (e: any) => {
     e.preventDefault();
     const uuid = v4();
     await createRoomMutation.mutateAsync({
@@ -36,7 +41,20 @@ export default function Robby() {
       id: uuid,
       owner_id: user?.id,
     });
+    await createAdmissionMutation.mutateAsync({
+      user_id: user!.id,
+      room_id: uuid,
+    });
     router.push(`/room/${uuid}`);
+  };
+
+  const handleJoinClick = async (e: any) => {
+    e.preventDefault();
+    const target = admissions?.reduce((prev, current) => {
+      return current.created_at > prev.created_at ? current : prev;
+    }, admissions[0]);
+    console.log({ target });
+    router.push(`/room/${target?.room_id}`);
   };
 
   const handleEditClick = (e: any) => {
@@ -71,14 +89,24 @@ export default function Robby() {
           value={editedRoom.name}
           onChange={(e) => update({ ...editedRoom, name: e.target.value })}
         />
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleClick}
-          disabled={!editedRoom.name}
-        >
-          Create Room
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleCreateClick}
+            disabled={!editedRoom.name}
+          >
+            CREATE
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleJoinClick}
+            disabled={!admissions?.length}
+          >
+            JOIN
+          </Button>
+        </Stack>
       </Stack>
     </>
   );

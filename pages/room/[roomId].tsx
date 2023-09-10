@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
-import { useQueryRoom } from "../../hooks/useQueryRoom";
-import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
-import { CardSlot, Hand } from "../../components";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CurtainsIcon from "@mui/icons-material/Curtains";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { useQueryRoom } from "../../hooks/useQueryRoom";
+import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
+import { CardSlot, Hand } from "../../components";
 
 export default function Room() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function Room() {
 
   const handleExitClick = (e: any) => {
     e.preventDefault();
-    router.push("/robby");
+    router.push("/lobby");
   };
 
   const handleSignOutClick = (e: any) => {

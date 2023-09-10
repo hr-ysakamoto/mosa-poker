@@ -9,7 +9,7 @@ export default function Index() {
   const user = useUser();
   const router = useRouter();
   useEffect(() => {
-    if (user) router.push("/robby");
+    if (user) router.push("/lobby");
   }, [user, router]);
 
   return (
@@ -27,7 +27,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (session)
     return {
       redirect: {
-        destination: "/robby",
+        destination: "/lobby",
         permanent: false,
       },
     };

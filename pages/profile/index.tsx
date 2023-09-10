@@ -15,7 +15,7 @@ export default function Profile() {
     await createProfileMutation.mutateAsync({
       ...editedProfile,
     });
-    router.push("/robby");
+    router.push("/lobby");
   };
 
   return (

@@ -20,3 +20,10 @@ export type EditedProfile = {
   user_name: string;
   avatar_url?: string;
 };
+
+export type Admission = {
+  id: string;
+  created_at: string;
+  user_id: string;
+  room_id: string;
+};
