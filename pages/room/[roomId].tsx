@@ -1,35 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import useStore from "../../store";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { useUser } from "@supabase/auth-helpers-react";
-import { supabase } from "../../utils/supabase";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { CardSlot, Hand } from "../../components";
 
 export default function Room() {
   const router = useRouter();
   const user = useUser();
-  const session = useStore((state) => state.session);
-  useEffect(() => {
-    if (!session) {
-      router.replace("/");
-    }
-  }, [session, router]);
-  console.log({ user });
+  const supabase = useSupabaseClient();
+  const [roomId, setRoomId] = useState<string>("");
+  const [roomName, setRoomName] = useState<string>("");
 
-  const { roomId } = router.query;
-  const { data: room } = useQueryRoom();
-  console.log({ room });
+  const { data: rooms } = useQueryRoom();
+  console.log({ rooms });
   useSubscribeRoom();
 
-  const handleClick = (e: any) => {
+  useEffect(() => {
+    if (router.asPath !== router.route) {
+      const roomId = String(router.query.roomId);
+      setRoomId(roomId);
+      const room = rooms?.find((room) => room.id === roomId);
+      setRoomName(room?.name || "");
+    }
+  }, [rooms, router]);
+
+  useEffect(() => {
+    if (router.isReady && !user) {
+      router.replace("/");
+    }
+  }, [router, user]);
+
+  const handleExitClick = (e: any) => {
     e.preventDefault();
-    router.push("/");
+    router.push("/robby");
   };
 
-  const signOut = () => {
+  const handleSignOut = (e: any) => {
+    e.preventDefault();
     supabase.auth.signOut();
     router.push("/");
   };
@@ -39,32 +49,45 @@ export default function Room() {
   const users = ["Taro", "Jiro", "Saburo", "Shiro"];
 
   return (
-    <Stack alignItems="center">
-      <Typography variant="body1">Room ID: {roomId}</Typography>
-      <Typography variant="h5">{!room ? "No room" : room.name}</Typography>
-      <Button onClick={signOut}>Log Out</Button>
-      <Stack sx={{ p: 3 }} spacing={2} direction="row" justifyContent="center">
-        <Button variant="outlined">reveal</Button>
-        <Button variant="outlined">reset</Button>
-      </Stack>
-      <Box sx={{ p: 3 }}>
-        <Stack direction="row" justifyContent="center">
-          {users.map((user) => (
-            <CardSlot key={user} state="up" value={"😊"} />
+    roomId && (
+      <Stack alignItems="center">
+        <Typography variant="body1">Room ID: {roomId}</Typography>
+        <Typography sx={{ p: 2 }} variant="h4">
+          {roomName}
+        </Typography>
+        <Button onClick={handleSignOut}>Log Out</Button>
+        <Stack
+          sx={{ p: 3 }}
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+        >
+          <Button variant="outlined">reveal</Button>
+          <Button variant="outlined">reset</Button>
+        </Stack>
+        <Box sx={{ p: 3 }}>
+          <Stack direction="row" justifyContent="center">
+            {users.map((user) => (
+              <CardSlot key={user} state="up" value={"😊"} />
+            ))}
+          </Stack>
+        </Box>
+        <Typography variant="h5" align="center">
+          Select a card
+        </Typography>
+        <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
+          {fibos.map((value) => (
+            <Hand key={value} value={value.toString()} />
           ))}
         </Stack>
-      </Box>
-      <Typography variant="h5" align="center">
-        Select a card
-      </Typography>
-      <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
-        {fibos.map((value) => (
-          <Hand key={value} value={value.toString()} />
-        ))}
+        <Button
+          style={{ width: 20 }}
+          variant="contained"
+          onClick={handleExitClick}
+        >
+          Exit
+        </Button>
       </Stack>
-      <Button style={{ width: 20 }} variant="contained" onClick={handleClick}>
-        Exit
-      </Button>
-    </Stack>
+    )
   );
 }

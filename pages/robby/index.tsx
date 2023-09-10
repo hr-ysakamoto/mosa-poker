@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { CreateRoomForm } from "../../components/CreateRoomForm";
-import useStore from "../../store";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export default function Robby() {
+  const user = useUser();
   const router = useRouter();
-  const session = useStore((state) => state.session);
   useEffect(() => {
-    if (!session) {
+    if (!user) {
       router.replace("/");
     }
-  }, [session, router]);
+  }, [user, router]);
   return <CreateRoomForm />;
 }

@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useQueryClient } from "react-query";
-import { supabase } from "../utils/supabase";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Room } from "../types";
 
 export const useSubscribeRoom = () => {
   const queryClient = useQueryClient();
+  const supabase = useSupabaseClient();
   useEffect(() => {
     const subscription = supabase
       .channel(`public:rooms`)
@@ -18,21 +19,44 @@ export const useSubscribeRoom = () => {
         (payload) => {
           if (payload.eventType === "INSERT") {
             console.log("insert payload: ", payload);
-            queryClient.setQueryData<Room>(["room"], {
-              id: payload.new.id,
-              created_at: payload.new.created_at,
-              owner_id: payload.new.owner_id,
-              name: payload.new.name,
-            });
+            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            if (!previousRooms) {
+              previousRooms = [];
+            }
+            const newRooms = [
+              ...previousRooms,
+              {
+                id: payload.new.id,
+                created_at: payload.new.created_at,
+                owner_id: payload.new.owner_id,
+                name: payload.new.name,
+              },
+            ];
+            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
           } else if (payload.eventType === "UPDATE") {
-            queryClient.setQueryData<Room>(["room"], {
-              id: payload.new.id,
-              created_at: payload.new.created_at,
-              owner_id: payload.new.owner_id,
-              name: payload.new.name,
+            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            if (!previousRooms) {
+              previousRooms = [];
+            }
+            const newRooms = previousRooms.map((room) => {
+              if (room.id === payload.new.id) {
+                room.id = payload.new.id;
+                room.created_at = payload.new.created_at;
+                room.owner_id = payload.new.owner_id;
+                room.name = payload.new.name;
+              }
+              return room;
             });
+            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
           } else if (payload.eventType === "DELETE") {
-            queryClient.setQueryData<Room | undefined>(["room"], undefined);
+            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            if (!previousRooms) {
+              previousRooms = [];
+            }
+            const newRooms = previousRooms.filter(
+              (room) => room.id !== payload.old.id
+            );
+            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
           }
         }
       )
@@ -40,5 +64,5 @@ export const useSubscribeRoom = () => {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [queryClient]);
+  }, [queryClient, supabase]);
 };

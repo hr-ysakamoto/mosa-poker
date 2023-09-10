@@ -1,26 +1,38 @@
 import { useEffect } from "react";
-import useStore from "../store";
-import { Auth, Layout } from "../components";
-import { supabase } from "../utils/supabase";
+import { AuthForm, Layout } from "../components";
+import { useUser } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
+import { GetServerSidePropsContext } from "next";
+import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Index() {
-  const session = useStore((state) => state.session);
-  const setSession = useStore((state) => state.setSession);
-
+  const user = useUser();
+  const router = useRouter();
+  console.log({ user });
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      supabase.auth.onAuthStateChange((_event, session) => {
-        console.log({ _event });
-        setSession(session);
-      });
-    })();
-  }, [session, setSession]);
+    if (user) router.push("/robby");
+  }, [user, router]);
 
   return (
     <Layout title="Mosa-Poker">
-      <Auth />
+      <AuthForm />
     </Layout>
   );
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const supabase = createPagesServerClient(ctx);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session)
+    return {
+      redirect: {
+        destination: "/robby",
+        permanent: false,
+      },
+    };
+  return {
+    props: {},
+  };
+};

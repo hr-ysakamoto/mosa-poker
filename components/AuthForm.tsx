@@ -1,24 +1,13 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "../utils/supabase";
-import { useUser } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
-export const Auth: FC = () => {
-  const user = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    console.log({ user });
-    if (user) {
-      router.replace("/robby");
-    }
-  }, [user]);
-
+export const AuthForm: FC = () => {
+  const supabaseClient = useSupabaseClient();
   return (
     <SupabaseAuth
-      supabaseClient={supabase}
+      supabaseClient={supabaseClient}
       localization={{
         variables: {
           sign_in: {
