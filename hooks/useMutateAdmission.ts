@@ -42,7 +42,32 @@ export const useMutateAdmission = () => {
       },
     }
   );
+  const deleteAdmissionMutation = useMutation(
+    async (userId: string) => {
+      const { error } = await supabase
+        .from("admissions")
+        .delete()
+        .eq("user_id", userId);
+      if (error) throw new Error(error.message);
+      return userId;
+    },
+    {
+      onSuccess: (userId: string) => {
+        let previousAdmissions = queryClient.getQueryData<Admission[]>([
+          "admissions",
+        ]);
+        const newData = previousAdmissions?.filter(
+          (admission) => admission.user_id !== userId
+        );
+        queryClient.setQueryData<Admission[]>(["admissions"], newData || []);
+      },
+      onError: (err: any) => {
+        alert(err.message);
+      },
+    }
+  );
   return {
     createAdmissionMutation,
+    deleteAdmissionMutation,
   };
 };

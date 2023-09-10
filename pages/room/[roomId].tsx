@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CurtainsIcon from "@mui/icons-material/Curtains";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { CardSlot, Hand } from "../../components";
+import { SignOutButton } from "../../components/SignOutButton";
+import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 
 export default function Room() {
   const router = useRouter();
   const user = useUser();
-  const supabase = useSupabaseClient();
   const [roomId, setRoomId] = useState<string>("");
+  const { deleteAdmissionMutation } = useMutateAdmission();
 
   const { data: rooms } = useQueryRoom();
   useSubscribeRoom();
@@ -33,15 +33,10 @@ export default function Room() {
     }
   }, [router, user]);
 
-  const handleExitClick = (e: any) => {
+  const handleExitClick = async (e: any) => {
     e.preventDefault();
+    await deleteAdmissionMutation.mutateAsync(user!.id);
     router.push("/lobby");
-  };
-
-  const handleSignOutClick = (e: any) => {
-    e.preventDefault();
-    supabase.auth.signOut();
-    router.push("/");
   };
 
   const roomName = () => {
@@ -65,13 +60,7 @@ export default function Room() {
           <Button startIcon={<MeetingRoomIcon />} onClick={handleExitClick}>
             EXIT
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<LogoutIcon />}
-            onClick={handleSignOutClick}
-          >
-            LOGOUT
-          </Button>
+          <SignOutButton />
         </Stack>
         <Typography sx={{ p: 2 }} variant="h4">
           {roomName()}

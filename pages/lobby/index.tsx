@@ -15,6 +15,7 @@ import { useQueryAdmission } from "../../hooks/useQueryAdmission";
 import EditIcon from "@mui/icons-material/Edit";
 import useStore from "../../store";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
+import { SignOutButton } from "../../components/SignOutButton";
 
 export default function Lobby() {
   const editedRoom = useStore((state) => state.editedRoom);
@@ -106,6 +107,7 @@ export default function Lobby() {
           >
             JOIN
           </Button>
+          <SignOutButton />
         </Stack>
       </Stack>
     </>
