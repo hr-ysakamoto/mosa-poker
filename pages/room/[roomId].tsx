@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CurtainsIcon from "@mui/icons-material/Curtains";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import useStore from "../../store";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useQueryAdmission } from "../../hooks/useQueryAdmission";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
@@ -15,57 +16,27 @@ import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 
 export default function Room() {
   const router = useRouter();
+  const roomId = useStore((state) => state.currentRoomId);
   const user = useUser();
-  const [roomId, setRoomId] = useState<string>("");
   const { deleteAdmissionMutation } = useMutateAdmission();
-
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
-  useSubscribeRoom();
-  useSubscribeAdmissions();
 
   useEffect(() => {
-    if (router.asPath !== router.route) {
-      const roomId = String(router.query.roomId);
-      setRoomId(roomId);
+    if (admissions && user && router.isReady && !roomId) {
+      const inviteKey = router.query.roomId;
+      router.replace(`/lobby?invite=${inviteKey}`);
     }
-  }, [rooms, router]);
+  }, [router, user, admissions, roomId]);
+
+  useSubscribeRoom();
+  useSubscribeAdmissions(roomId!);
 
   useEffect(() => {
     if (router.isReady && !user) {
       router.replace("/");
     }
   }, [router, user]);
-
-  useEffect(() => {
-    if (admissions && roomId && user) {
-      const self = admissions?.find(
-        (admission) =>
-          admission.user_id === user?.id && admission.room_id === roomId
-      );
-      if (router.isReady && !self) {
-        router.replace(`/lobby?invite=${roomId}`);
-      }
-    }
-  }, [router, user, admissions, roomId]);
-
-  // useEffect(() => {
-  //   async function createAdmission() {
-  //     if (admissions && user && roomId) {
-  //       const self = admissions.filter(
-  //         (admission) =>
-  //           admission.user_id === user.id && admission.room_id === roomId
-  //       );
-  //       if (self.length === 0) {
-  //         await createAdmissionMutation.mutateAsync({
-  //           user_id: user.id,
-  //           room_id: roomId,
-  //         });
-  //       }
-  //     }
-  //   }
-  //   createAdmission();
-  // }, [admissions, user, createAdmissionMutation, roomId]);
 
   const handleExitClick = async (e: any) => {
     e.preventDefault();
@@ -81,7 +52,7 @@ export default function Room() {
   // const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const userProfiles = [
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
-    { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "HR" },
+    { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
   ];
 
   return (

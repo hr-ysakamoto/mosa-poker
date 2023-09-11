@@ -19,7 +19,8 @@ import { SignOutButton } from "../../components/SignOutButton";
 
 export default function Lobby() {
   const editedRoom = useStore((state) => state.editedRoom);
-  const update = useStore((state) => state.updateEditedRoom);
+  const updateEditedRoom = useStore((state) => state.updateEditedRoom);
+  const updateRoom = useStore((state) => state.setCurrentRoomId);
   const { createRoomMutation } = useMutateRoom();
   const { createAdmissionMutation } = useMutateAdmission();
   const { data: profile } = useQueryProfile();
@@ -38,7 +39,6 @@ export default function Lobby() {
 
   useEffect(() => {
     if (router.isReady && router.query.invite) {
-      console.log("router.query.invite: ", router.query.invite);
       const roomId = String(router.query.invite);
       setInvitationRoomId(roomId);
     }
@@ -56,6 +56,7 @@ export default function Lobby() {
       user_id: user!.id,
       room_id: uuid,
     });
+    updateRoom(uuid);
     router.push(`/room/${uuid}`);
   };
 
@@ -64,15 +65,18 @@ export default function Lobby() {
     const target = admissions?.reduce((prev, current) => {
       return current.created_at > prev.created_at ? current : prev;
     }, admissions[0]);
-    router.push(`/room/${target?.room_id}`);
+    const roomId = target?.room_id;
+    updateRoom(roomId!);
+    router.push(`/room/${roomId!}`);
   };
 
   const handleInvitationJoinClick = async (e: any) => {
     e.preventDefault();
     await createAdmissionMutation.mutateAsync({
       user_id: user!.id,
-      room_id: invitationRoomId ?? "",
+      room_id: invitationRoomId!,
     });
+    updateRoom(invitationRoomId!);
     router.push(`/room/${invitationRoomId}`);
   };
 
@@ -124,7 +128,9 @@ export default function Lobby() {
               label="Room name"
               variant="outlined"
               value={editedRoom.name}
-              onChange={(e) => update({ ...editedRoom, name: e.target.value })}
+              onChange={(e) =>
+                updateEditedRoom({ ...editedRoom, name: e.target.value })
+              }
             />
             <Stack direction="row" spacing={2} justifyContent="center">
               <Button

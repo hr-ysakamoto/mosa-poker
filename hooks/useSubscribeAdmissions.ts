@@ -3,7 +3,7 @@ import { useQueryClient } from "react-query";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Admission } from "../types";
 
-export const useSubscribeAdmissions = () => {
+export const useSubscribeAdmissions = (roomId: string) => {
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
   useEffect(() => {
@@ -15,6 +15,7 @@ export const useSubscribeAdmissions = () => {
           event: "*",
           schema: "public",
           table: "admissions",
+          filter: `room_id=eq.${roomId}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
