@@ -17,8 +17,7 @@ export default function Room() {
   const router = useRouter();
   const user = useUser();
   const [roomId, setRoomId] = useState<string>("");
-  const { createAdmissionMutation, deleteAdmissionMutation } =
-    useMutateAdmission();
+  const { deleteAdmissionMutation } = useMutateAdmission();
 
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
@@ -39,22 +38,34 @@ export default function Room() {
   }, [router, user]);
 
   useEffect(() => {
-    async function createAdmission() {
-      if (admissions && user && roomId) {
-        const self = admissions.filter(
-          (admission) =>
-            admission.user_id === user.id && admission.room_id === roomId
-        );
-        if (self.length === 0) {
-          await createAdmissionMutation.mutateAsync({
-            user_id: user.id,
-            room_id: roomId,
-          });
-        }
+    if (admissions && roomId && user) {
+      const self = admissions?.find(
+        (admission) =>
+          admission.user_id === user?.id && admission.room_id === roomId
+      );
+      if (router.isReady && !self) {
+        router.replace(`/lobby?invite=${roomId}`);
       }
     }
-    createAdmission();
-  }, [admissions, user, createAdmissionMutation, roomId]);
+  }, [router, user, admissions, roomId]);
+
+  // useEffect(() => {
+  //   async function createAdmission() {
+  //     if (admissions && user && roomId) {
+  //       const self = admissions.filter(
+  //         (admission) =>
+  //           admission.user_id === user.id && admission.room_id === roomId
+  //       );
+  //       if (self.length === 0) {
+  //         await createAdmissionMutation.mutateAsync({
+  //           user_id: user.id,
+  //           room_id: roomId,
+  //         });
+  //       }
+  //     }
+  //   }
+  //   createAdmission();
+  // }, [admissions, user, createAdmissionMutation, roomId]);
 
   const handleExitClick = async (e: any) => {
     e.preventDefault();
@@ -69,9 +80,8 @@ export default function Room() {
   const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
   // const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const userProfiles = [
-    { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki Sakamoto" },
-    { id: "", name: "Jiro" },
-    { id: "", name: "Saburo" },
+    { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
+    { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "HR" },
   ];
 
   return (

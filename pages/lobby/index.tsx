@@ -28,10 +28,21 @@ export default function Lobby() {
   const user = useUser();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [invitationRoomId, setInvitationRoomId] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (router.isReady && router.query.invite) {
+      console.log("router.query.invite: ", router.query.invite);
+      const roomId = String(router.query.invite);
+      setInvitationRoomId(roomId);
+    }
+  }, [router]);
 
   const handleCreateClick = async (e: any) => {
     e.preventDefault();
@@ -54,6 +65,15 @@ export default function Lobby() {
       return current.created_at > prev.created_at ? current : prev;
     }, admissions[0]);
     router.push(`/room/${target?.room_id}`);
+  };
+
+  const handleInvitationJoinClick = async (e: any) => {
+    e.preventDefault();
+    await createAdmissionMutation.mutateAsync({
+      user_id: user!.id,
+      room_id: invitationRoomId ?? "",
+    });
+    router.push(`/room/${invitationRoomId}`);
   };
 
   const handleEditClick = (e: any) => {
@@ -80,33 +100,55 @@ export default function Lobby() {
             </Typography>
           </>
         )}
-        <TextField
-          sx={{ pb: 3 }}
-          id="outlined-basic"
-          label="Room name"
-          variant="outlined"
-          value={editedRoom.name}
-          onChange={(e) => update({ ...editedRoom, name: e.target.value })}
-        />
-        <Stack direction="row" spacing={2} justifyContent="center">
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleCreateClick}
-            disabled={!editedRoom.name}
-          >
-            CREATE
-          </Button>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleJoinClick}
-            disabled={!admissions?.length}
-          >
-            JOIN
-          </Button>
-          <SignOutButton />
-        </Stack>
+        {invitationRoomId !== undefined && (
+          <>
+            <Typography variant="body1">Room ID: {invitationRoomId}</Typography>
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleInvitationJoinClick}
+                disabled={!invitationRoomId}
+              >
+                JOIN
+              </Button>
+              <SignOutButton />
+            </Stack>
+          </>
+        )}
+        {invitationRoomId === undefined && (
+          <>
+            <TextField
+              sx={{ pb: 3 }}
+              id="outlined-basic"
+              label="Room name"
+              variant="outlined"
+              value={editedRoom.name}
+              onChange={(e) => update({ ...editedRoom, name: e.target.value })}
+            />
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleCreateClick}
+                disabled={!editedRoom.name}
+              >
+                CREATE
+              </Button>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleJoinClick}
+                disabled={
+                  !admissions?.filter((x) => x.user_id === user?.id)?.length
+                }
+              >
+                JOIN
+              </Button>
+              <SignOutButton />
+            </Stack>
+          </>
+        )}
       </Stack>
     </>
   );
