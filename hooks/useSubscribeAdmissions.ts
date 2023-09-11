@@ -32,6 +32,7 @@ export const useSubscribeAdmissions = (roomId: string) => {
                 created_at: payload.new.created_at,
                 user_id: payload.new.user_id,
                 room_id: payload.new.room_id,
+                card: payload.new.card,
               },
             ];
             queryClient.setQueryData<Admission[]>(
@@ -51,6 +52,7 @@ export const useSubscribeAdmissions = (roomId: string) => {
                 admission.created_at = payload.new.created_at;
                 admission.user_id = payload.new.user_id;
                 admission.room_id = payload.new.room_id;
+                admission.card = payload.new.card;
               }
               return admission;
             });
@@ -79,5 +81,5 @@ export const useSubscribeAdmissions = (roomId: string) => {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [queryClient, supabase]);
+  }, [queryClient, supabase, roomId]);
 };

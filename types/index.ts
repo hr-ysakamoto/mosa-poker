@@ -3,6 +3,7 @@ export type Room = {
   created_at: string;
   owner_id?: string;
   name: string;
+  status: "Up" | "Down";
 };
 
 export type EditedRoom = {
@@ -26,4 +27,5 @@ export type Admission = {
   created_at: string;
   user_id: string;
   room_id: string;
+  card: string;
 };

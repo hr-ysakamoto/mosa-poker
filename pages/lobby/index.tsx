@@ -51,10 +51,12 @@ export default function Lobby() {
       ...editedRoom,
       id: uuid,
       owner_id: user?.id,
+      status: "Down",
     });
     await createAdmissionMutation.mutateAsync({
       user_id: user!.id,
       room_id: uuid,
+      card: "",
     });
     updateRoom(uuid);
     router.push(`/room/${uuid}`);
@@ -75,6 +77,7 @@ export default function Lobby() {
     await createAdmissionMutation.mutateAsync({
       user_id: user!.id,
       room_id: invitationRoomId!,
+      card: "",
     });
     updateRoom(invitationRoomId!);
     router.push(`/room/${invitationRoomId}`);

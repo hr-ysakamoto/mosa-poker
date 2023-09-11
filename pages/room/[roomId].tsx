@@ -17,6 +17,7 @@ import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 export default function Room() {
   const router = useRouter();
   const roomId = useStore((state) => state.currentRoomId);
+  const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
   const { deleteAdmissionMutation } = useMutateAdmission();
   const { data: rooms } = useQueryRoom();
@@ -24,10 +25,19 @@ export default function Room() {
 
   useEffect(() => {
     if (admissions && user && router.isReady && !roomId) {
-      const inviteKey = router.query.roomId;
-      router.replace(`/lobby?invite=${inviteKey}`);
+      const currentRoomId = String(router.query.roomId);
+      const loginUser = admissions.find(
+        (x) => x.user_id === user.id && x.room_id === currentRoomId
+      );
+      // リロードなどでの再入場とみなし、storeにセット
+      if (loginUser) {
+        updateRoom(currentRoomId);
+      } else {
+        // 入室情報がない場合、招待リンク経由とみなす
+        router.replace(`/lobby?invite=${currentRoomId}`);
+      }
     }
-  }, [router, user, admissions, roomId]);
+  }, [router, user, admissions, roomId, updateRoom]);
 
   useSubscribeRoom();
   useSubscribeAdmissions(roomId!);
