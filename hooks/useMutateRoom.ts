@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "react-query";
 import { Room } from "../types";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export const useMutateRoom = () => {
-  const user = useUser();
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
 
@@ -12,7 +11,7 @@ export const useMutateRoom = () => {
       const { data, error } = await supabase
         .from("rooms")
         .insert(room)
-        .eq("owner_id", user?.id)
+        .eq("owner_id", room.owner_id)
         .order("created_at", { ascending: false })
         .select()
         .limit(1)
@@ -47,7 +46,7 @@ export const useMutateRoom = () => {
       const { data, error } = await supabase
         .from("rooms")
         .update({ name: room.name })
-        .eq("owner_id", user?.id);
+        .eq("owner_id", room.owner_id);
       if (error) throw new Error(error.message);
       return data;
     },
@@ -58,11 +57,11 @@ export const useMutateRoom = () => {
     }
   );
   const deleteRoomMutation = useMutation(
-    async () => {
+    async (ownerId: string) => {
       const { data, error } = await supabase
         .from("rooms")
         .delete()
-        .eq("owner_id", user?.id);
+        .eq("owner_id", ownerId);
       if (error) throw new Error(error.message);
       return data;
     },
