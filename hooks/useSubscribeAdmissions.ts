@@ -41,7 +41,6 @@ export const useSubscribeAdmissions = () => {
             let previousAdmissions = queryClient.getQueryData<Admission[]>([
               "admissions",
             ]);
-            console.log({ previousAdmissions });
             if (!previousAdmissions) {
               previousAdmissions = [];
             }
@@ -54,7 +53,6 @@ export const useSubscribeAdmissions = () => {
               }
               return admission;
             });
-            console.log({ newAdmissions });
             queryClient.setQueryData<Admission[]>(
               ["admissions"],
               newAdmissions

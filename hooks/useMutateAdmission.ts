@@ -20,7 +20,6 @@ export const useMutateAdmission = () => {
     },
     {
       onSuccess: (data: Admission) => {
-        console.log({ data });
         let previousAdmissions = queryClient.getQueryData<Admission[]>([
           "admissions",
         ]);

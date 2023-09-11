@@ -24,7 +24,6 @@ export default function Lobby() {
   const { createAdmissionMutation } = useMutateAdmission();
   const { data: profile } = useQueryProfile();
   const { data: admissions } = useQueryAdmission();
-  console.log({ admissions });
 
   const user = useUser();
   const router = useRouter();
@@ -54,7 +53,6 @@ export default function Lobby() {
     const target = admissions?.reduce((prev, current) => {
       return current.created_at > prev.created_at ? current : prev;
     }, admissions[0]);
-    console.log({ target });
     router.push(`/room/${target?.room_id}`);
   };
 

@@ -24,7 +24,6 @@ export default function Room() {
   const { data: admissions } = useQueryAdmission();
   useSubscribeRoom();
   useSubscribeAdmissions();
-  console.log({ admissions });
 
   useEffect(() => {
     if (router.asPath !== router.route) {
@@ -41,13 +40,11 @@ export default function Room() {
 
   useEffect(() => {
     async function createAdmission() {
-      console.log("fire");
       if (admissions && user && roomId) {
         const self = admissions.filter(
           (admission) =>
             admission.user_id === user.id && admission.room_id === roomId
         );
-        console.log({ self });
         if (self.length === 0) {
           await createAdmissionMutation.mutateAsync({
             user_id: user.id,
