@@ -21,7 +21,28 @@ export const useMutateProfile = () => {
     },
     {
       onSuccess: (data: Profile) => {
-        console.log({ data });
+        queryClient.setQueryData<Profile>(["profile"], data);
+      },
+      onError: (err: any) => {
+        alert(err.message);
+      },
+    }
+  );
+  const updateProfileMutation = useMutation(
+    async (profile: Omit<Profile, "created_at">) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ user_name: profile.user_name })
+        .eq("id", profile.id)
+        .select()
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    {
+      onSuccess: (data: Profile) => {
         queryClient.setQueryData<Profile>(["profile"], data);
       },
       onError: (err: any) => {
@@ -31,5 +52,6 @@ export const useMutateProfile = () => {
   );
   return {
     createProfileMutation,
+    updateProfileMutation,
   };
 };
