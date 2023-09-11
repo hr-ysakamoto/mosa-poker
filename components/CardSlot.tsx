@@ -23,7 +23,7 @@ const down = {
 };
 
 interface CardSlotProps {
-  state: "up" | "down";
+  state: "Up" | "Down";
   name: string;
   value: string;
 }
@@ -32,8 +32,8 @@ export const CardSlot = ({ state, name, value }: CardSlotProps) => {
   return (
     <>
       <Stack direction="column">
-        <div style={state === "up" ? up : down}>
-          {state === "up" ? value : ""}
+        <div style={state === "Up" ? up : down}>
+          {state === "Up" ? value : ""}
         </div>
         <p style={{ margin: 0, textAlign: "center", fontSize: 15 }}>{name}</p>
       </Stack>

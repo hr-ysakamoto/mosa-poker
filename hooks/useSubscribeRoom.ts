@@ -3,7 +3,7 @@ import { useQueryClient } from "react-query";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Room } from "../types";
 
-export const useSubscribeRoom = () => {
+export const useSubscribeRoom = (roomId: string) => {
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
   useEffect(() => {
@@ -15,6 +15,7 @@ export const useSubscribeRoom = () => {
           event: "*",
           schema: "public",
           table: "rooms",
+          filter: `id=eq.${roomId}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
@@ -29,6 +30,7 @@ export const useSubscribeRoom = () => {
                 created_at: payload.new.created_at,
                 owner_id: payload.new.owner_id,
                 name: payload.new.name,
+                status: payload.new.status,
               },
             ];
             queryClient.setQueryData<Room[]>(["rooms"], newRooms);
@@ -43,6 +45,7 @@ export const useSubscribeRoom = () => {
                 room.created_at = payload.new.created_at;
                 room.owner_id = payload.new.owner_id;
                 room.name = payload.new.name;
+                room.status = payload.new.status;
               }
               return room;
             });
@@ -63,5 +66,5 @@ export const useSubscribeRoom = () => {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [queryClient, supabase]);
+  }, [queryClient, supabase, roomId]);
 };

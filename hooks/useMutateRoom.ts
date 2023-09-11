@@ -32,6 +32,7 @@ export const useMutateRoom = () => {
             created_at: data.created_at,
             owner_id: data.owner_id,
             name: data.name,
+            status: data.status,
           },
         ];
         queryClient.setQueryData<Room[]>(["rooms"], newRooms);
@@ -42,15 +43,37 @@ export const useMutateRoom = () => {
     }
   );
   const updateRoomMutation = useMutation(
-    async (room: Omit<Room, "id" | "created_at">) => {
-      const { data, error } = await supabase
+    async (room: Room) => {
+      const { error } = await supabase
         .from("rooms")
-        .update({ name: room.name })
-        .eq("owner_id", room.owner_id);
+        .update({
+          name: room.name,
+          owner_id: room.owner_id,
+          status: room.status,
+        })
+        .eq("id", room.id);
+
       if (error) throw new Error(error.message);
-      return data;
+      return room;
     },
     {
+      onSuccess: (data: Room) => {
+        let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+        if (!previousRooms) {
+          previousRooms = [];
+        }
+        const newRooms = previousRooms.map((room) => {
+          if (room.id === data.id) {
+            room.id = data.id;
+            room.created_at = data.created_at;
+            room.owner_id = data.owner_id;
+            room.name = data.name;
+            room.status = data.status;
+          }
+          return room;
+        });
+        queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+      },
       onError: (err: any) => {
         alert(err.message);
       },

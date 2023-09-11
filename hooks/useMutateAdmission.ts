@@ -33,6 +33,7 @@ export const useMutateAdmission = () => {
             created_at: data.created_at,
             user_id: data.user_id,
             room_id: data.room_id,
+            card: data.card,
           },
         ];
         queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
