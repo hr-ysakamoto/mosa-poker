@@ -6,6 +6,7 @@ import { Room } from "../types";
 export const useSubscribeRoom = (roomId: string) => {
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
+
   useEffect(() => {
     const subscription = supabase
       .channel(`public:rooms`)

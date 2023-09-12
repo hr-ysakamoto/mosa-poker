@@ -14,19 +14,21 @@ import { useMutateRoom } from "../../hooks/useMutateRoom";
 import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
+import { Room } from "../../types";
 
-export default function Room() {
+export default function RoomPage() {
   const router = useRouter();
   const roomId = useStore((state) => state.currentRoomId);
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
+  const [room, setRoom] = useState<Room>();
   const { deleteAdmissionMutation } = useMutateAdmission();
   const { updateRoomMutation } = useMutateRoom();
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
-  const [roomStatus, setRoomStatus] = useState<"Up" | "Down">("Down");
 
-  console.log({ rooms });
+  useSubscribeRoom(roomId!);
+  useSubscribeAdmissions(roomId!);
 
   useEffect(() => {
     if (admissions && user && router.isReady && !roomId) {
@@ -44,13 +46,10 @@ export default function Room() {
     }
   }, [router, user, admissions, roomId, updateRoom]);
 
-  useSubscribeRoom(roomId!);
-  useSubscribeAdmissions(roomId!);
-
   useEffect(() => {
     if (rooms && roomId) {
       const room = rooms.find((room) => room.id === roomId);
-      setRoomStatus(room?.status || "Down");
+      setRoom(room);
     }
   }, [rooms, roomId]);
 
@@ -62,36 +61,24 @@ export default function Room() {
 
   const handleRevealClick = async (e: any) => {
     e.preventDefault();
-    const room = rooms?.find((room) => room.id === roomId);
-    console.log("handleRevealClick");
-    console.log({ room });
     await updateRoomMutation.mutateAsync({
       id: roomId!,
       created_at: room?.created_at || "",
-      name: roomName(),
+      name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Up",
     });
-    setRoomStatus("Up");
   };
 
   const handleResetClick = async (e: any) => {
     e.preventDefault();
-    const room = rooms?.find((room) => room.id === roomId);
-    console.log("handleResetClick");
-    console.log({ room });
     await updateRoomMutation.mutateAsync({
       id: roomId!,
       created_at: room?.created_at || "",
-      name: roomName(),
+      name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Down",
     });
-    setRoomStatus("Down");
-  };
-
-  const roomName = () => {
-    return rooms?.find((room) => room.id === roomId)?.name || "";
   };
 
   const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
@@ -100,70 +87,72 @@ export default function Room() {
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
     { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
   ];
-  console.log("render");
-  console.log({ rooms });
-  console.log({ admissions });
+
   return (
-    <Stack alignItems="center">
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Typography variant="body1">Room ID: {roomId}</Typography>
-        <Button startIcon={<MeetingRoomIcon />} onClick={handleExitClick}>
-          EXIT
-        </Button>
-        <SignOutButton />
-      </Stack>
-      <Typography sx={{ p: 2 }} variant="h4">
-        {roomName()}
-      </Typography>
-      <Stack sx={{ p: 3 }} spacing={2} direction="row" justifyContent="center">
-        <Button
-          variant="outlined"
-          size="large"
-          startIcon={<CurtainsIcon />}
-          onClick={handleRevealClick}
+    room && (
+      <Stack alignItems="center">
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
         >
-          REVEAL
-        </Button>
-        <Button
-          variant="outlined"
-          size="large"
-          startIcon={<RestartAltIcon />}
-          onClick={handleResetClick}
-        >
-          RESET
-        </Button>
-      </Stack>
-      <Box sx={{ p: 3 }}>
-        <Stack direction="row" justifyContent="center">
-          {admissions?.flatMap((admission) => {
-            if (admission.room_id !== roomId) return [];
-            const user = userProfiles.find(
-              (profile) => profile.id === admission.user_id
-            );
-            return (
-              <CardSlot
-                key={admission.id}
-                state={rooms?.find((x) => x.id === roomId)?.status || "Down"}
-                name={user?.name || ""}
-                value={"😅"}
-              />
-            );
-          })}
+          <Typography variant="body1">Room ID: {roomId}</Typography>
+          <Button startIcon={<MeetingRoomIcon />} onClick={handleExitClick}>
+            EXIT
+          </Button>
+          <SignOutButton />
         </Stack>
-      </Box>
-      {/* <Typography variant="h5" align="center">
-        Select a card
-      </Typography> */}
-      <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
-        {fibos.map((value) => (
-          <Hand key={value} value={value.toString()} />
-        ))}
+        <Typography sx={{ p: 2 }} variant="h4">
+          {room?.name || "Loading..."}
+        </Typography>
+        <Stack
+          sx={{ p: 3 }}
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+        >
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<CurtainsIcon />}
+            onClick={handleRevealClick}
+          >
+            REVEAL
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<RestartAltIcon />}
+            onClick={handleResetClick}
+          >
+            RESET
+          </Button>
+        </Stack>
+        <Box sx={{ p: 3 }}>
+          <Stack direction="row" justifyContent="center">
+            {admissions?.flatMap((admission) => {
+              if (admission.room_id !== roomId) return [];
+              const user = userProfiles.find(
+                (profile) => profile.id === admission.user_id
+              );
+              return (
+                <CardSlot
+                  key={admission.id}
+                  state={room?.status || "Down"}
+                  name={user?.name || ""}
+                  value={"😅"}
+                />
+              );
+            })}
+          </Stack>
+        </Box>
+        <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
+          {fibos.map((value) => (
+            <Hand key={value} value={value.toString()} />
+          ))}
+        </Stack>
       </Stack>
-    </Stack>
+    )
   );
 }
