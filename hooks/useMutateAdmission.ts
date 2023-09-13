@@ -91,9 +91,40 @@ export const useMutateAdmission = () => {
       },
     }
   );
+  const resetAdmissionMutation = useMutation(
+    async (roomId: string) => {
+      const { data, error } = await supabase
+        .from("admissions")
+        .update({ card: "" })
+        .order("created_at", { ascending: false })
+        .eq("room_id", roomId)
+        .select();
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    {
+      onSuccess: (data: Admission[]) => {
+        let previousAdmissions = queryClient.getQueryData<Admission[]>([
+          "admissions",
+        ]);
+        if (!previousAdmissions) {
+          previousAdmissions = [];
+        }
+        const ids = data.map((admission) => admission.id);
+        const rest = previousAdmissions.filter((x) => !ids.includes(x.id));
+        const newAdmissions = [...rest, ...data];
+        queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
+      },
+      onError: (err: any) => {
+        alert(err.message);
+      },
+    }
+  );
   return {
     createAdmissionMutation,
     updateAdmissionMutation,
     deleteAdmissionMutation,
+    resetAdmissionMutation,
   };
 };

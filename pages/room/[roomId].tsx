@@ -23,8 +23,11 @@ export default function RoomPage() {
   const user = useUser();
   const [room, setRoom] = useState<Room>();
   const [selectedCard, setSelectedCard] = useState<string>();
-  const { updateAdmissionMutation, deleteAdmissionMutation } =
-    useMutateAdmission();
+  const {
+    updateAdmissionMutation,
+    deleteAdmissionMutation,
+    resetAdmissionMutation,
+  } = useMutateAdmission();
   const { updateRoomMutation } = useMutateRoom();
 
   const { data: rooms } = useQueryRoom();
@@ -84,15 +87,7 @@ export default function RoomPage() {
       owner_id: room?.owner_id || "",
       status: "Down",
     });
-    admissions?.forEach(async (admission) => {
-      await updateAdmissionMutation.mutateAsync({
-        id: admission.id!,
-        created_at: admission.created_at || "",
-        user_id: admission.user_id || "",
-        room_id: admission.room_id || "",
-        card: "",
-      });
-    });
+    resetAdmissionMutation.mutateAsync(roomId!);
     setSelectedCard(undefined);
   };
 
@@ -170,7 +165,7 @@ export default function RoomPage() {
           <Stack direction="row" justifyContent="center">
             {admissions?.flatMap((admission) => {
               if (admission.room_id !== roomId) return [];
-              const user = userProfiles.find(
+              const userProfile = userProfiles.find(
                 (profile) => profile.id === admission.user_id
               );
               return (
@@ -178,7 +173,8 @@ export default function RoomPage() {
                   key={admission.id}
                   isFaceUp={room?.status === "Up"}
                   isPlaced={admission.card !== ""}
-                  name={user?.name || ""}
+                  isLoginUser={admission.user_id === user?.id}
+                  name={userProfile?.name || ""}
                   value={admission.card || ""}
                 />
               );
@@ -194,6 +190,9 @@ export default function RoomPage() {
             />
           ))}
         </Stack>
+        <Typography variant="body1">
+          select: {selectedCard || "none"}
+        </Typography>
       </Stack>
     )
   );

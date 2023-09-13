@@ -37,6 +37,7 @@ const getStyle = (isFaceUp: boolean, isPlaced: boolean) => {
 interface CardSlotProps {
   isFaceUp: boolean;
   isPlaced: boolean;
+  isLoginUser: boolean;
   name: string;
   value: string;
 }
@@ -44,6 +45,7 @@ interface CardSlotProps {
 export const CardSlot = ({
   isFaceUp,
   isPlaced,
+  isLoginUser,
   name,
   value,
 }: CardSlotProps) => {
@@ -52,9 +54,15 @@ export const CardSlot = ({
     <>
       <Stack direction="column">
         <div style={targetStyle}>{isFaceUp && <p>{value}</p>}</div>
-        <p style={{ marginTop: 5, textAlign: "center", fontSize: 15 }}>
-          {name}
-        </p>
+        {isLoginUser ? (
+          <b style={{ marginTop: 5, textAlign: "center", fontSize: 15 }}>
+            {name}
+          </b>
+        ) : (
+          <p style={{ marginTop: 5, textAlign: "center", fontSize: 15 }}>
+            {name}
+          </p>
+        )}
       </Stack>
     </>
   );
