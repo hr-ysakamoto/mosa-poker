@@ -16,7 +16,7 @@ export const SignOutButton = () => {
 
   return (
     <Button
-      variant="contained"
+      variant="text"
       startIcon={<LogoutIcon />}
       onClick={handleSignOutClick}
     >

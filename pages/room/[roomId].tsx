@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Snackbar, Stack, Typography } from "@mui/material";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CurtainsIcon from "@mui/icons-material/Curtains";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import useStore from "../../store";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useQueryAdmission } from "../../hooks/useQueryAdmission";
@@ -22,6 +23,7 @@ export default function RoomPage() {
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
   const [room, setRoom] = useState<Room>();
+  const [open, setOpen] = useState<boolean>(false);
   const {
     updateAdmissionMutation,
     deleteAdmissionMutation,
@@ -105,6 +107,23 @@ export default function RoomPage() {
     });
   };
 
+  const handleCopyToClipBoardClick = async (e: any) => {
+    e.preventDefault();
+    setOpen(true);
+    await global.navigator.clipboard.writeText(
+      `${window.location.origin}/lobby?invite=${roomId}`
+    );
+  };
+  const handleCloseSnackbar = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
+
   // const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
   const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const userProfiles = [
@@ -126,21 +145,21 @@ export default function RoomPage() {
           justifyContent="center"
           alignItems="center"
         >
-          <Typography variant="body1">Room ID: {roomId}</Typography>
+          <Button
+            startIcon={<ContentCopyIcon />}
+            onClick={handleCopyToClipBoardClick}
+          >
+            COPY LINK
+          </Button>
           <Button startIcon={<MeetingRoomIcon />} onClick={handleExitClick}>
             EXIT
           </Button>
           <SignOutButton />
         </Stack>
-        <Typography sx={{ p: 2 }} variant="h4">
+        <Typography sx={{ py: 5 }} variant="h4">
           {room?.name || "Loading..."}
         </Typography>
-        <Stack
-          sx={{ p: 3 }}
-          spacing={2}
-          direction="row"
-          justifyContent="center"
-        >
+        <Stack spacing={2} direction="row" justifyContent="center">
           <Button
             variant="outlined"
             size="large"
@@ -163,7 +182,7 @@ export default function RoomPage() {
             RESET
           </Button>
         </Stack>
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ py: 8 }}>
           <Stack direction="row" justifyContent="center">
             {admissions
               ?.sort((a, b) => (a.id > b.id ? 1 : -1))
@@ -185,7 +204,7 @@ export default function RoomPage() {
               })}
           </Stack>
         </Box>
-        <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
+        <Stack direction="row" justifyContent="center">
           {emojis.map((value) => (
             <Hand
               key={value}
@@ -199,6 +218,19 @@ export default function RoomPage() {
           Your choice:
           {loginUserSession?.card || " None"}
         </Typography>
+        <Snackbar
+          open={open}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            copied to clipboard!
+          </Alert>
+        </Snackbar>
       </Stack>
     )
   );
