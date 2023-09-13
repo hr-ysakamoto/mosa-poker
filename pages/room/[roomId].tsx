@@ -22,9 +22,11 @@ export default function RoomPage() {
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
   const [room, setRoom] = useState<Room>();
+  const [selectedCard, setSelectedCard] = useState<string>();
   const { updateAdmissionMutation, deleteAdmissionMutation } =
     useMutateAdmission();
   const { updateRoomMutation } = useMutateRoom();
+
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
 
@@ -35,11 +37,13 @@ export default function RoomPage() {
     if (admissions && user && router.isReady && !roomId) {
       const currentRoomId = String(router.query.roomId);
       const loginUser = admissions.find(
-        (x) => x.user_id === user.id && x.room_id === currentRoomId
+        (admission) =>
+          admission.user_id === user.id && admission.room_id === currentRoomId
       );
       // リロードなどでの再入場とみなし、storeにセット
       if (loginUser) {
         updateRoom(currentRoomId);
+        setSelectedCard(loginUser.card);
       } else {
         // 入室情報がない場合、招待リンク経由とみなす
         router.replace(`/lobby?invite=${currentRoomId}`);
@@ -80,6 +84,16 @@ export default function RoomPage() {
       owner_id: room?.owner_id || "",
       status: "Down",
     });
+    admissions?.forEach(async (admission) => {
+      await updateAdmissionMutation.mutateAsync({
+        id: admission.id!,
+        created_at: admission.created_at || "",
+        user_id: admission.user_id || "",
+        room_id: admission.room_id || "",
+        card: "",
+      });
+    });
+    setSelectedCard(undefined);
   };
 
   const handleHandClick = async (e: any, value: string) => {
@@ -96,10 +110,11 @@ export default function RoomPage() {
       room_id: room?.id || "",
       card: value,
     });
+    setSelectedCard(value);
   };
 
-  const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-  // const emojis = ["😰", "😞", "😐", "😀", "😊"];
+  // const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+  const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const userProfiles = [
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
     { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
@@ -133,6 +148,11 @@ export default function RoomPage() {
             variant="outlined"
             size="large"
             startIcon={<CurtainsIcon />}
+            disabled={
+              !admissions
+                ?.filter((x) => x.room_id === roomId)
+                .every((x) => x.card !== "")
+            }
             onClick={handleRevealClick}
           >
             REVEAL
@@ -156,7 +176,8 @@ export default function RoomPage() {
               return (
                 <CardSlot
                   key={admission.id}
-                  state={room?.status || "Down"}
+                  isFaceUp={room?.status === "Up"}
+                  isPlaced={!!selectedCard}
                   name={user?.name || ""}
                   value={admission.card || ""}
                 />
@@ -164,9 +185,8 @@ export default function RoomPage() {
             })}
           </Stack>
         </Box>
-        <Button onClick={(e) => handleHandClick(e, "12")}>tesut</Button>
         <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
-          {fibos.map((value) => (
+          {emojis.map((value) => (
             <Hand
               key={value}
               value={value.toString()}
