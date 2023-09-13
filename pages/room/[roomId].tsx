@@ -22,7 +22,6 @@ export default function RoomPage() {
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
   const [room, setRoom] = useState<Room>();
-  const [selectedCard, setSelectedCard] = useState<string>();
   const {
     updateAdmissionMutation,
     deleteAdmissionMutation,
@@ -39,6 +38,7 @@ export default function RoomPage() {
   useEffect(() => {
     if (admissions && user && router.isReady && !roomId) {
       const currentRoomId = String(router.query.roomId);
+      // ログインユーザーの入室情報を取得
       const loginUser = admissions.find(
         (admission) =>
           admission.user_id === user.id && admission.room_id === currentRoomId
@@ -46,7 +46,6 @@ export default function RoomPage() {
       // リロードなどでの再入場とみなし、storeにセット
       if (loginUser) {
         updateRoom(currentRoomId);
-        setSelectedCard(loginUser.card);
       } else {
         // 入室情報がない場合、招待リンク経由とみなす
         router.replace(`/lobby?invite=${currentRoomId}`);
@@ -88,7 +87,6 @@ export default function RoomPage() {
       status: "Down",
     });
     resetAdmissionMutation.mutateAsync(roomId!);
-    setSelectedCard(undefined);
   };
 
   const handleHandClick = async (e: any, value: string) => {
@@ -105,7 +103,6 @@ export default function RoomPage() {
       room_id: room?.id || "",
       card: value,
     });
-    setSelectedCard(value);
   };
 
   // const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
@@ -114,6 +111,11 @@ export default function RoomPage() {
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
     { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
   ];
+
+  const loginUserSession = admissions?.find(
+    (admission) =>
+      admission.room_id === roomId && admission.user_id === user?.id
+  );
 
   return (
     room && (
@@ -163,22 +165,24 @@ export default function RoomPage() {
         </Stack>
         <Box sx={{ p: 3 }}>
           <Stack direction="row" justifyContent="center">
-            {admissions?.flatMap((admission) => {
-              if (admission.room_id !== roomId) return [];
-              const userProfile = userProfiles.find(
-                (profile) => profile.id === admission.user_id
-              );
-              return (
-                <CardSlot
-                  key={admission.id}
-                  isFaceUp={room?.status === "Up"}
-                  isPlaced={admission.card !== ""}
-                  isLoginUser={admission.user_id === user?.id}
-                  name={userProfile?.name || ""}
-                  value={admission.card || ""}
-                />
-              );
-            })}
+            {admissions
+              ?.sort((a, b) => (a.id > b.id ? 1 : -1))
+              .flatMap((admission) => {
+                if (admission.room_id !== roomId) return [];
+                const userProfile = userProfiles.find(
+                  (profile) => profile.id === admission.user_id
+                );
+                return (
+                  <CardSlot
+                    key={admission.id}
+                    isFaceUp={room?.status === "Up"}
+                    isPlaced={admission.card !== ""}
+                    isLoginUser={admission.user_id === user?.id}
+                    name={userProfile?.name || ""}
+                    value={admission.card || ""}
+                  />
+                );
+              })}
           </Stack>
         </Box>
         <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
@@ -186,12 +190,14 @@ export default function RoomPage() {
             <Hand
               key={value}
               value={value.toString()}
+              selected={loginUserSession?.card === value}
               onClick={(e) => handleHandClick(e, value.toString())}
             />
           ))}
         </Stack>
         <Typography variant="body1">
-          select: {selectedCard || "none"}
+          Your choice:
+          {loginUserSession?.card || " None"}
         </Typography>
       </Stack>
     )
