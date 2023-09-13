@@ -22,7 +22,8 @@ export default function RoomPage() {
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const user = useUser();
   const [room, setRoom] = useState<Room>();
-  const { deleteAdmissionMutation } = useMutateAdmission();
+  const { updateAdmissionMutation, deleteAdmissionMutation } =
+    useMutateAdmission();
   const { updateRoomMutation } = useMutateRoom();
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
@@ -78,6 +79,21 @@ export default function RoomPage() {
       name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Down",
+    });
+  };
+
+  const handleHandClick = async (e: any, value: string) => {
+    e.preventDefault();
+    const target = admissions?.find(
+      (admission) =>
+        admission.user_id === user?.id && admission.room_id === roomId
+    );
+    await updateAdmissionMutation.mutateAsync({
+      id: target?.id!,
+      created_at: room?.created_at || "",
+      user_id: user?.id || "",
+      room_id: room?.id || "",
+      card: value,
     });
   };
 
@@ -141,15 +157,20 @@ export default function RoomPage() {
                   key={admission.id}
                   state={room?.status || "Down"}
                   name={user?.name || ""}
-                  value={"😅"}
+                  value={admission.card || ""}
                 />
               );
             })}
           </Stack>
         </Box>
+        <Button onClick={(e) => handleHandClick(e, "12")}>tesut</Button>
         <Stack sx={{ p: 3 }} direction="row" justifyContent="center">
           {fibos.map((value) => (
-            <Hand key={value} value={value.toString()} />
+            <Hand
+              key={value}
+              value={value.toString()}
+              onClick={(e) => handleHandClick(e, value.toString())}
+            />
           ))}
         </Stack>
       </Stack>

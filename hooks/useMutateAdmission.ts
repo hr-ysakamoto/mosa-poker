@@ -43,6 +43,49 @@ export const useMutateAdmission = () => {
       },
     }
   );
+  const updateAdmissionMutation = useMutation(
+    async (admission: Admission) => {
+      console.log({ admission });
+      const { data, error } = await supabase
+        .from("admissions")
+        .update({ card: admission.card })
+        .order("created_at", { ascending: false })
+        .eq("id", admission.id)
+        .select()
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw new Error(error.message);
+      console.log({ error });
+      return data;
+    },
+    {
+      onSuccess: (data: Admission) => {
+        let previousAdmissions = queryClient.getQueryData<Admission[]>([
+          "admissions",
+        ]);
+        if (!previousAdmissions) {
+          previousAdmissions = [];
+        }
+        const newAdmissions = previousAdmissions.map((admission) => {
+          if (admission.id === data.id) {
+            admission.id = data.id;
+            admission.created_at = data.created_at;
+            admission.user_id = data.user_id;
+            admission.room_id = data.room_id;
+            admission.card = data.card;
+          }
+          return admission;
+        });
+        console.log("added");
+        console.log({ newAdmissions });
+        queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
+      },
+      onError: (err: any) => {
+        alert(err.message);
+      },
+    }
+  );
   const deleteAdmissionMutation = useMutation(
     async (userId: string) => {
       const { error } = await supabase
@@ -69,6 +112,7 @@ export const useMutateAdmission = () => {
   );
   return {
     createAdmissionMutation,
+    updateAdmissionMutation,
     deleteAdmissionMutation,
   };
 };
