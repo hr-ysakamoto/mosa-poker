@@ -45,7 +45,6 @@ export const useMutateAdmission = () => {
   );
   const updateAdmissionMutation = useMutation(
     async (admission: Admission) => {
-      console.log({ admission });
       const { data, error } = await supabase
         .from("admissions")
         .update({ card: admission.card })
@@ -56,7 +55,6 @@ export const useMutateAdmission = () => {
         .maybeSingle();
 
       if (error) throw new Error(error.message);
-      console.log({ error });
       return data;
     },
     {
@@ -77,8 +75,6 @@ export const useMutateAdmission = () => {
           }
           return admission;
         });
-        console.log("added");
-        console.log({ newAdmissions });
         queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
       },
       onError: (err: any) => {
