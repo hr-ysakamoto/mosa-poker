@@ -177,7 +177,7 @@ export default function RoomPage() {
                 <CardSlot
                   key={admission.id}
                   isFaceUp={room?.status === "Up"}
-                  isPlaced={!!selectedCard}
+                  isPlaced={admission.card !== ""}
                   name={user?.name || ""}
                   value={admission.card || ""}
                 />
