@@ -25,16 +25,7 @@ export const useMutateRoom = () => {
         if (!previousRooms) {
           previousRooms = [];
         }
-        const newRooms = [
-          ...previousRooms,
-          {
-            id: data.id,
-            created_at: data.created_at,
-            owner_id: data.owner_id,
-            name: data.name,
-            status: data.status,
-          },
-        ];
+        const newRooms = [...previousRooms, data];
         queryClient.setQueryData<Room[]>(["rooms"], newRooms);
       },
       onError: (err: any) => {
@@ -48,7 +39,6 @@ export const useMutateRoom = () => {
         .from("rooms")
         .update({
           name: room.name,
-          owner_id: room.owner_id,
           status: room.status,
         })
         .eq("id", room.id);
@@ -63,13 +53,7 @@ export const useMutateRoom = () => {
           previousRooms = [];
         }
         const newRooms = previousRooms.map((room) => {
-          if (room.id === data.id) {
-            room.id = data.id;
-            room.created_at = data.created_at;
-            room.owner_id = data.owner_id;
-            room.name = data.name;
-            room.status = data.status;
-          }
+          if (room.id === data.id) return data;
           return room;
         });
         queryClient.setQueryData<Room[]>(["rooms"], newRooms);
