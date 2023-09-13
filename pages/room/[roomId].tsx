@@ -159,15 +159,20 @@ export default function RoomPage() {
         <Typography sx={{ py: 5 }} variant="h4">
           {room?.name || "Loading..."}
         </Typography>
-        <Stack spacing={2} direction="row" justifyContent="center">
+        <Stack
+          sx={{ pb: 1 }}
+          spacing={2}
+          direction="row"
+          justifyContent="center"
+        >
           <Button
             variant="outlined"
             size="large"
             startIcon={<CurtainsIcon />}
             disabled={
               !admissions
-                ?.filter((x) => x.room_id === roomId)
-                .every((x) => x.card !== "")
+                ?.filter((admissinon) => admissinon.room_id === roomId)
+                .every((admission) => admission.card !== "")
             }
             onClick={handleRevealClick}
           >
@@ -182,7 +187,7 @@ export default function RoomPage() {
             RESET
           </Button>
         </Stack>
-        <Box sx={{ py: 8 }}>
+        <Box sx={{ py: 6 }}>
           <Stack direction="row" justifyContent="center">
             {admissions
               ?.sort((a, b) => (a.id > b.id ? 1 : -1))
@@ -214,7 +219,7 @@ export default function RoomPage() {
             />
           ))}
         </Stack>
-        <Typography variant="body1">
+        <Typography sx={{ py: 3 }} variant="body1">
           Your choice:
           {loginUserSession?.card || " None"}
         </Typography>
