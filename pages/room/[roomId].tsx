@@ -84,6 +84,7 @@ export default function RoomPage() {
 
   const handleHandClick = async (e: any, value: string) => {
     e.preventDefault();
+    console.log("clicked");
     const target = admissions?.find(
       (admission) =>
         admission.user_id === user?.id && admission.room_id === roomId

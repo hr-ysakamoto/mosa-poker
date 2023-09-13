@@ -26,16 +26,7 @@ export const useMutateAdmission = () => {
         if (!previousAdmissions) {
           previousAdmissions = [];
         }
-        const newAdmissions = [
-          ...previousAdmissions,
-          {
-            id: data.id,
-            created_at: data.created_at,
-            user_id: data.user_id,
-            room_id: data.room_id,
-            card: data.card,
-          },
-        ];
+        const newAdmissions = [...previousAdmissions, data];
         queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
       },
       onError: (err: any) => {
@@ -66,13 +57,7 @@ export const useMutateAdmission = () => {
           previousAdmissions = [];
         }
         const newAdmissions = previousAdmissions.map((admission) => {
-          if (admission.id === data.id) {
-            admission.id = data.id;
-            admission.created_at = data.created_at;
-            admission.user_id = data.user_id;
-            admission.room_id = data.room_id;
-            admission.card = data.card;
-          }
+          if (admission.id === data.id) return data;
           return admission;
         });
         queryClient.setQueryData<Admission[]>(["admissions"], newAdmissions);
