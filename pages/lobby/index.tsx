@@ -107,7 +107,7 @@ export default function Lobby() {
             </Typography>
           </>
         )}
-        {invitationRoomId !== undefined && (
+        {!!invitationRoomId && (
           <>
             <Typography variant="body1">Room ID: {invitationRoomId}</Typography>
             <Stack direction="row" spacing={2} justifyContent="center">
@@ -123,7 +123,8 @@ export default function Lobby() {
             </Stack>
           </>
         )}
-        {invitationRoomId === undefined && (
+        {/* 招待されている場合 */}
+        {!invitationRoomId && (
           <>
             <TextField
               sx={{ pb: 3 }}
