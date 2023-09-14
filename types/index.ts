@@ -29,3 +29,12 @@ export type Admission = {
   room_id: string;
   card: string;
 };
+
+export type Deck = {
+  deck_id: number;
+  name: string;
+  card_id: number;
+  value: string;
+  order_no: number;
+  color: string;
+};

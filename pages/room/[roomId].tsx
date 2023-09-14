@@ -9,6 +9,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import useStore from "../../store";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useQueryAdmission } from "../../hooks/useQueryAdmission";
+import { useQueryDeck } from "../../hooks/useQueryDeck";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
@@ -34,6 +35,7 @@ export default function RoomPage() {
 
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
+  const { data: decks } = useQueryDeck();
 
   useSubscribeRoom(roomId!);
   useSubscribeAdmissions(roomId!);
@@ -125,6 +127,7 @@ export default function RoomPage() {
     setOpen(false);
   };
 
+  // TODO: useQueryに置き換える
   const userProfiles = [
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
     { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
@@ -135,10 +138,11 @@ export default function RoomPage() {
       admission.room_id === roomId && admission.user_id === user?.id
   );
 
-  const taegetCardSet = CARD_SET.find((cardSet) => cardSet.id === 1);
+  const cardSet = decks?.filter((deck) => deck.deck_id === 2);
 
   return (
-    room && (
+    room &&
+    cardSet && (
       <Stack alignItems="center">
         <Stack
           direction="row"
@@ -211,12 +215,12 @@ export default function RoomPage() {
           </Stack>
         </Box>
         <Stack direction="row" justifyContent="center">
-          {taegetCardSet?.cards.map((value) => (
+          {cardSet?.map((card) => (
             <Hand
-              key={value}
-              value={value.toString()}
-              selected={loginUserSession?.card === value}
-              onClick={(e) => handleHandClick(e, value.toString())}
+              key={card.card_id}
+              value={card.value.toString()}
+              selected={loginUserSession?.card === card.value}
+              onClick={(e) => handleHandClick(e, card.value.toString())}
             />
           ))}
         </Stack>
