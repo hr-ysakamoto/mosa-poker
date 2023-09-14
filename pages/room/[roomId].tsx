@@ -16,6 +16,7 @@ import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
 import { Room } from "../../types";
+import { CARD_SET } from "../../lib";
 
 export default function RoomPage() {
   const router = useRouter();
@@ -124,8 +125,6 @@ export default function RoomPage() {
     setOpen(false);
   };
 
-  // const fibos = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
-  const emojis = ["😰", "😞", "😐", "😀", "😊"];
   const userProfiles = [
     { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
     { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
@@ -135,6 +134,8 @@ export default function RoomPage() {
     (admission) =>
       admission.room_id === roomId && admission.user_id === user?.id
   );
+
+  const taegetCardSet = CARD_SET.find((cardSet) => cardSet.id === 1);
 
   return (
     room && (
@@ -210,7 +211,7 @@ export default function RoomPage() {
           </Stack>
         </Box>
         <Stack direction="row" justifyContent="center">
-          {emojis.map((value) => (
+          {taegetCardSet?.cards.map((value) => (
             <Hand
               key={value}
               value={value.toString()}
