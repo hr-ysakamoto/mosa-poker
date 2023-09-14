@@ -4,18 +4,24 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { v4 } from "uuid";
 import {
   Button,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
 import { useQueryAdmission } from "../../hooks/useQueryAdmission";
-import EditIcon from "@mui/icons-material/Edit";
 import useStore from "../../store";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 import { SignOutButton } from "../../components/SignOutButton";
+import { CARD_SET } from "../../lib";
 
 export default function Lobby() {
   const editedRoom = useStore((state) => state.editedRoom);
@@ -32,6 +38,11 @@ export default function Lobby() {
   const [invitationRoomId, setInvitationRoomId] = useState<string | undefined>(
     undefined
   );
+  const [cardSet, setCardSet] = useState<string>("");
+
+  const handleCardSetChange = (e: SelectChangeEvent) => {
+    setCardSet(e.target.value);
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -136,7 +147,26 @@ export default function Lobby() {
                 updateEditedRoom({ ...editedRoom, name: e.target.value })
               }
             />
-            <Stack direction="row" spacing={2} justifyContent="center">
+            <FormControl>
+              <InputLabel>Set</InputLabel>
+              <Select
+                value={cardSet}
+                label="Set"
+                onChange={handleCardSetChange}
+              >
+                {CARD_SET.map((set) => (
+                  <MenuItem key={set.id} value={set.id}>
+                    {`${set.name} (${set.cards.join(", ")})`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Stack
+              sx={{ pt: 4 }}
+              direction="row"
+              spacing={2}
+              justifyContent="center"
+            >
               <Button
                 variant="contained"
                 size="large"
