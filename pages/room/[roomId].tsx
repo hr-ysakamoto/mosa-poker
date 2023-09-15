@@ -17,6 +17,7 @@ import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
 import { Room } from "../../types";
+import { DEFAULT_DECK_ID } from "../../lib";
 
 export default function RoomPage() {
   const router = useRouter();
@@ -64,12 +65,27 @@ export default function RoomPage() {
     }
   }, [rooms, roomId]);
 
+  // セッションが切れていたらトップページにリダイレクト
+  useEffect(() => {
+    if (!user) {
+      router.replace("/");
+    }
+  }, [user, router]);
+
+  /**
+   * Exitボタンクリックイベント
+   * @param e
+   */
   const handleExitClick = async (e: any) => {
     e.preventDefault();
     await deleteAdmissionMutation.mutateAsync(user!.id);
     router.push("/lobby");
   };
 
+  /**
+   * Revealボタンクリックイベント
+   * @param e
+   */
   const handleRevealClick = async (e: any) => {
     e.preventDefault();
     await updateRoomMutation.mutateAsync({
@@ -82,6 +98,10 @@ export default function RoomPage() {
     });
   };
 
+  /**
+   * Resetボタンクリックイベント
+   * @param e
+   */
   const handleResetClick = async (e: any) => {
     e.preventDefault();
     await updateRoomMutation.mutateAsync({
@@ -90,11 +110,16 @@ export default function RoomPage() {
       name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Down",
-      deck_id: room?.deck_id || 1,
+      deck_id: room?.deck_id || Number(DEFAULT_DECK_ID),
     });
     resetAdmissionMutation.mutateAsync(roomId!);
   };
 
+  /**
+   * 手札のクリックイベント
+   * @param e
+   * @param value 選んだカードの値
+   */
   const handleHandClick = async (e: any, value: string) => {
     e.preventDefault();
     const target = admissions?.find(
@@ -110,6 +135,10 @@ export default function RoomPage() {
     });
   };
 
+  /**
+   * 招待リンクのコピーイベント
+   * @param e
+   */
   const handleCopyToClipBoardClick = async (e: any) => {
     e.preventDefault();
     setOpen(true);
@@ -138,11 +167,11 @@ export default function RoomPage() {
       admission.room_id === roomId && admission.user_id === user?.id
   );
 
-  const cardSet = decks?.filter((deck) => deck.deck_id === room?.deck_id);
+  const targetDeck = decks?.filter((deck) => deck.deck_id === room?.deck_id);
 
   return (
     room &&
-    cardSet && (
+    targetDeck && (
       <Stack alignItems="center">
         <Stack
           direction="row"
@@ -201,7 +230,7 @@ export default function RoomPage() {
                 const userProfile = userProfiles.find(
                   (profile) => profile.id === admission.user_id
                 );
-                const color = cardSet.find(
+                const color = targetDeck.find(
                   (x) => x.value === admission.card
                 )?.color;
                 return (
@@ -219,7 +248,7 @@ export default function RoomPage() {
           </Stack>
         </Box>
         <Stack direction="row" justifyContent="center">
-          {cardSet?.map((card) => (
+          {targetDeck?.map((card) => (
             <Hand
               key={card.card_id}
               value={card.value.toString()}

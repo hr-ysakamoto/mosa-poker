@@ -9,6 +9,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import "../styles/global.scss";
 import theme from "../lib/theme";
+import createEmotionCache from "../lib/createEmotionCache";
+import { CacheProvider, EmotionCache } from "@emotion/react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,25 +22,37 @@ const queryClient = new QueryClient({
   },
 });
 
-const App: NextPage<AppProps> = ({ pageProps, Component }: AppProps) => {
+interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache;
+}
+const clientSideEmotionCache = createEmotionCache();
+
+const App: NextPage<MyAppProps> = ({
+  pageProps,
+  Component,
+  emotionCache,
+}: MyAppProps) => {
   const [supabaseClient] = useState(() => createPagesBrowserClient());
+  emotionCache = clientSideEmotionCache;
   return (
-    <SessionContextProvider
-      supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <Head>
-            <title>mosa-poker</title>
-          </Head>
-          <CssBaseline />
-          <main>
-            <Component {...pageProps} />
-          </main>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </SessionContextProvider>
+    <CacheProvider value={emotionCache}>
+      <SessionContextProvider
+        supabaseClient={supabaseClient}
+        initialSession={pageProps.initialSession}
+      >
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={theme}>
+            <Head>
+              <title>mosa-poker</title>
+            </Head>
+            <CssBaseline />
+            <main>
+              <Component {...pageProps} />
+            </main>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SessionContextProvider>
+    </CacheProvider>
   );
 };
 

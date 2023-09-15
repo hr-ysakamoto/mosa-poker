@@ -23,7 +23,7 @@ const downStyle = {
 };
 const notPlacedStyle = {
   ...common,
-  border: "1px dashed #cccccc",
+  border: "1px dashed #dddddd",
   backgroundColor: "#fcfcfc",
 };
 

@@ -10,15 +10,15 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { SignOutButton } from "./SignOutButton";
-import { CARD_SET } from "../lib";
+import { DEFAULT_DECK_ID } from "../lib";
 import useStore from "../store";
 import { useMutateRoom } from "../hooks/useMutateRoom";
 import { v4 } from "uuid";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useMutateAdmission } from "../hooks/useMutateAdmission";
 import { useRouter } from "next/router";
-
-const DEFAULT_DECK_ID = "1";
+import { useQueryDeck } from "../hooks/useQueryDeck";
+import { groupBy } from "../lib/aggregate";
 
 interface CreateRoomFormProps {}
 
@@ -31,6 +31,8 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
   const { createAdmissionMutation } = useMutateAdmission();
   const user = useUser();
   const router = useRouter();
+  const { data: decks } = useQueryDeck();
+  const cardSet = groupBy(decks || [], (deck) => deck.deck_id);
 
   const handleCardSetChange = (e: SelectChangeEvent) => {
     setDeckId(e.target.value);
@@ -71,9 +73,9 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
       <FormControl>
         <InputLabel>Set</InputLabel>
         <Select value={deckId} label="Set" onChange={handleCardSetChange}>
-          {CARD_SET.map((set) => (
-            <MenuItem key={set.id} value={set.id}>
-              {`${set.name} (${set.cards.join(", ")})`}
+          {cardSet?.map((deck) => (
+            <MenuItem key={deck[0]} value={deck[0]}>
+              {`${deck[1][0].name} (${deck[1].map((x) => x.value).join(", ")})`}
             </MenuItem>
           ))}
         </Select>
