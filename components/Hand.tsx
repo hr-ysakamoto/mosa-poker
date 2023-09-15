@@ -19,7 +19,7 @@ const cardStyle = {
 
 const selectedCardStyle = {
   ...commonStyle,
-  border: "1px solid tomato",
+  border: "1.5px solid tomato",
   position: "relative",
   bottom: 15,
 };
@@ -28,13 +28,13 @@ interface HandProps {
   value: string;
   selected: boolean;
   onClick: (e: any, value: string) => void;
+  color: string;
 }
-export const Hand = ({ value, selected, onClick }: HandProps) => {
+export const Hand = ({ value, selected, onClick, color }: HandProps) => {
+  const target = selected ? selectedCardStyle : cardStyle;
+  const style = { ...target, backgroundColor: color };
   return (
-    <button
-      style={selected ? selectedCardStyle : cardStyle}
-      onClick={(e) => onClick(e, value)}
-    >
+    <button style={style} onClick={(e) => onClick(e, value)}>
       {value}
     </button>
   );

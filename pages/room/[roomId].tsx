@@ -225,12 +225,13 @@ export default function RoomPage() {
               value={card.value.toString()}
               selected={loginUserSession?.card === card.value}
               onClick={(e) => handleHandClick(e, card.value.toString())}
+              color={card.color}
             />
           ))}
         </Stack>
         <Typography sx={{ py: 3 }} variant="body1">
-          Your choice:
-          {loginUserSession?.card || " None"}
+          {`Your choice: `}
+          {loginUserSession?.card || "None"}
         </Typography>
         <Snackbar
           open={open}
