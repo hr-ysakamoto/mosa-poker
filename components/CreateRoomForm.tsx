@@ -19,6 +19,7 @@ import { useMutateAdmission } from "../hooks/useMutateAdmission";
 import { useRouter } from "next/router";
 import { useQueryDeck } from "../hooks/useQueryDeck";
 import { groupBy } from "../lib/aggregate";
+import { Deck } from "../types";
 
 interface CreateRoomFormProps {}
 
@@ -58,12 +59,23 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
     router.push(`/room/${uuid}`);
   };
 
+  /**
+   * カードセットのタイトルを取得する
+   * @param tuple [deck_id, Deck[]]
+   * @returns
+   */
+  const getVotingSystemTitle = (tuple: [number, Deck[]]) => {
+    return `${tuple[1][0].name} (${tuple[1]
+      .map((card) => card.value)
+      .join(", ")})`;
+  };
+
   return (
     <>
       <TextField
         sx={{ pb: 3 }}
         id="outlined-basic"
-        label="Room name"
+        label="Room's name"
         variant="outlined"
         value={editedRoom.name}
         onChange={(e) =>
@@ -71,11 +83,15 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
         }
       />
       <FormControl>
-        <InputLabel>Set</InputLabel>
-        <Select value={deckId} label="Set" onChange={handleCardSetChange}>
+        <InputLabel>Voting System</InputLabel>
+        <Select
+          value={deckId}
+          label="Voting System"
+          onChange={handleCardSetChange}
+        >
           {cardSet?.map((deck) => (
             <MenuItem key={deck[0]} value={deck[0]}>
-              {`${deck[1][0].name} (${deck[1].map((x) => x.value).join(", ")})`}
+              {getVotingSystemTitle(deck)}
             </MenuItem>
           ))}
         </Select>
