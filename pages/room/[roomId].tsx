@@ -17,7 +17,6 @@ import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
 import { CardSlot, Hand } from "../../components";
 import { SignOutButton } from "../../components/SignOutButton";
 import { Room } from "../../types";
-import { CARD_SET } from "../../lib";
 
 export default function RoomPage() {
   const router = useRouter();
@@ -79,6 +78,7 @@ export default function RoomPage() {
       name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Up",
+      deck_id: room?.deck_id || 1,
     });
   };
 
@@ -90,13 +90,13 @@ export default function RoomPage() {
       name: room?.name || "",
       owner_id: room?.owner_id || "",
       status: "Down",
+      deck_id: room?.deck_id || 1,
     });
     resetAdmissionMutation.mutateAsync(roomId!);
   };
 
   const handleHandClick = async (e: any, value: string) => {
     e.preventDefault();
-    console.log("clicked");
     const target = admissions?.find(
       (admission) =>
         admission.user_id === user?.id && admission.room_id === roomId
@@ -114,11 +114,11 @@ export default function RoomPage() {
     e.preventDefault();
     setOpen(true);
     await global.navigator.clipboard.writeText(
-      `${window.location.origin}/lobby?invite=${roomId}`
+      `${window.location.origin}/room/${roomId}`
     );
   };
   const handleCloseSnackbar = (
-    event: React.SyntheticEvent | Event,
+    _: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === "clickaway") {
@@ -138,7 +138,7 @@ export default function RoomPage() {
       admission.room_id === roomId && admission.user_id === user?.id
   );
 
-  const cardSet = decks?.filter((deck) => deck.deck_id === 2);
+  const cardSet = decks?.filter((deck) => deck.deck_id === room?.deck_id);
 
   return (
     room &&
@@ -201,6 +201,9 @@ export default function RoomPage() {
                 const userProfile = userProfiles.find(
                   (profile) => profile.id === admission.user_id
                 );
+                const color = cardSet.find(
+                  (x) => x.value === admission.card
+                )?.color;
                 return (
                   <CardSlot
                     key={admission.id}
@@ -209,6 +212,7 @@ export default function RoomPage() {
                     isLoginUser={admission.user_id === user?.id}
                     name={userProfile?.name || ""}
                     value={admission.card || ""}
+                    color={color || "#eeeeee"}
                   />
                 );
               })}

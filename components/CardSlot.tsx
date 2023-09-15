@@ -13,8 +13,6 @@ const common = {
 };
 const upStyle = {
   ...common,
-  border: "1px solid skyblue",
-  backgroundColor: "#afeeee",
   boxShadow: "0px 10px 10px -6px rgba(0, 0, 0, 0.3)",
 };
 const downStyle = {
@@ -29,9 +27,9 @@ const notPlacedStyle = {
   backgroundColor: "#fcfcfc",
 };
 
-const getStyle = (isFaceUp: boolean, isPlaced: boolean) => {
+const getStyle = (isFaceUp: boolean, isPlaced: boolean, color: string) => {
   if (!isPlaced) return notPlacedStyle;
-  return isFaceUp ? upStyle : downStyle;
+  return isFaceUp ? { ...upStyle, backgroundColor: color } : downStyle;
 };
 
 interface CardSlotProps {
@@ -40,6 +38,7 @@ interface CardSlotProps {
   isLoginUser: boolean;
   name: string;
   value: string;
+  color: string;
 }
 
 export const CardSlot = ({
@@ -48,8 +47,9 @@ export const CardSlot = ({
   isLoginUser,
   name,
   value,
+  color,
 }: CardSlotProps) => {
-  const targetStyle = getStyle(isFaceUp, isPlaced);
+  const targetStyle = getStyle(isFaceUp, isPlaced, color);
   return (
     <>
       <Stack direction="column">

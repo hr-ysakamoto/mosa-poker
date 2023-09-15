@@ -1,7 +1,6 @@
 import React from "react";
 
 const commonStyle = {
-  backgroundColor: "#ffffff",
   height: "84px",
   width: "60px",
   borderRadius: "5px",

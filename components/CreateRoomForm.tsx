@@ -18,30 +18,34 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { useMutateAdmission } from "../hooks/useMutateAdmission";
 import { useRouter } from "next/router";
 
+const DEFAULT_DECK_ID = "1";
+
 interface CreateRoomFormProps {}
 
 export const CreateRoomForm = ({}: CreateRoomFormProps) => {
   const editedRoom = useStore((state) => state.editedRoom);
   const updateRoom = useStore((state) => state.setCurrentRoomId);
   const updateEditedRoom = useStore((state) => state.updateEditedRoom);
-  const [cardSet, setCardSet] = useState<string>("");
+  const [deckId, setDeckId] = useState<string>(DEFAULT_DECK_ID);
   const { createRoomMutation } = useMutateRoom();
   const { createAdmissionMutation } = useMutateAdmission();
   const user = useUser();
   const router = useRouter();
 
   const handleCardSetChange = (e: SelectChangeEvent) => {
-    setCardSet(e.target.value);
+    setDeckId(e.target.value);
   };
 
   const handleCreateClick = async (e: any) => {
     e.preventDefault();
+    if (!deckId) return;
     const uuid = v4();
     await createRoomMutation.mutateAsync({
       ...editedRoom,
       id: uuid,
       owner_id: user?.id,
       status: "Down",
+      deck_id: Number(deckId),
     });
     await createAdmissionMutation.mutateAsync({
       user_id: user!.id,
@@ -66,7 +70,7 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
       />
       <FormControl>
         <InputLabel>Set</InputLabel>
-        <Select value={cardSet} label="Set" onChange={handleCardSetChange}>
+        <Select value={deckId} label="Set" onChange={handleCardSetChange}>
           {CARD_SET.map((set) => (
             <MenuItem key={set.id} value={set.id}>
               {`${set.name} (${set.cards.join(", ")})`}
@@ -79,7 +83,7 @@ export const CreateRoomForm = ({}: CreateRoomFormProps) => {
           variant="contained"
           size="large"
           onClick={handleCreateClick}
-          disabled={!editedRoom.name}
+          disabled={!editedRoom.name || !deckId}
         >
           CREATE
         </Button>

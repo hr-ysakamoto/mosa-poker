@@ -32,6 +32,7 @@ export const useSubscribeRoom = (roomId: string) => {
                 owner_id: payload.new.owner_id,
                 name: payload.new.name,
                 status: payload.new.status,
+                deck_id: payload.new.deck_id,
               },
             ];
             queryClient.setQueryData<Room[]>(["rooms"], newRooms);
@@ -47,6 +48,7 @@ export const useSubscribeRoom = (roomId: string) => {
                 room.owner_id = payload.new.owner_id;
                 room.name = payload.new.name;
                 room.status = payload.new.status;
+                room.deck_id = payload.new.deck_id;
               }
               return room;
             });

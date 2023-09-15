@@ -4,6 +4,7 @@ export type Room = {
   owner_id?: string;
   name: string;
   status: "Up" | "Down";
+  deck_id: number;
 };
 
 export type EditedRoom = {
