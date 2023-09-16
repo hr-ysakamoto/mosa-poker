@@ -226,16 +226,16 @@ export default function RoomPage() {
                 const color = targetDeck.find(
                   (x) => x.value === admission.card
                 )?.color;
-                const userName = profiles?.find(
+                const profile = profiles?.find(
                   (profile) => profile.id === admission.user_id
-                )?.user_name;
+                );
                 return (
                   <CardSlot
                     key={admission.id}
                     isFaceUp={room?.status === "Up"}
                     isPlaced={admission.card !== ""}
                     isLoginUser={admission.user_id === user?.id}
-                    name={userName || ""}
+                    name={profile?.user_name || ""}
                     value={admission.card || ""}
                     color={color || "#eeeeee"}
                   />

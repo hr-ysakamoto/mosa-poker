@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 import { InvitationForm } from "../../components/InvitationForm";
 import { CreateRoomForm } from "../../components/CreateRoomForm";
+import PersonIcon from "@mui/icons-material/Person";
 import useStore from "../../store";
 
 export default function Lobby() {
@@ -48,7 +49,9 @@ export default function Lobby() {
 
   const handleEditClick = (e: any) => {
     e.preventDefault();
-    router.push("/profile");
+    router.replace(
+      `/profile${invitationRoomId ? `?invite=${invitationRoomId}` : ""}`
+    );
   };
 
   useEffect(() => {
@@ -60,14 +63,23 @@ export default function Lobby() {
   return (
     <Stack sx={{ m: 5 }}>
       {isClient && (
-        <>
-          <Typography sx={{ m: 2 }} variant="h5" textAlign="center">
+        <Stack
+          spacing={2}
+          sx={{ pb: 3 }}
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Avatar>
+            <PersonIcon />
+          </Avatar>
+          <Typography sx={{ m: 3 }} variant="h5" textAlign="center">
             {editedProfile.user_name || profile?.user_name}
-            <IconButton sx={{ ml: 1 }} size="small" onClick={handleEditClick}>
-              <EditIcon />
-            </IconButton>
           </Typography>
-        </>
+          <IconButton size="small" onClick={handleEditClick}>
+            <EditIcon />
+          </IconButton>
+        </Stack>
       )}
       {!!invitationRoomId && (
         <InvitationForm

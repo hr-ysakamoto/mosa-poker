@@ -1,10 +1,11 @@
-import React, { use } from "react";
-import { Button, Stack, TextField } from "@mui/material";
+import React from "react";
+import { Avatar, Button, Stack, TextField } from "@mui/material";
 import useStore from "../../store";
 import { useRouter } from "next/router";
 import { useMutateProfile } from "../../hooks/useMutateProfile";
 import { useUser } from "@supabase/auth-helpers-react";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
+import PersonIcon from "@mui/icons-material/Person";
 
 export default function Profile() {
   const { data: profiles } = useQueryProfile();
@@ -27,26 +28,31 @@ export default function Profile() {
     } else {
       await createProfileMutation.mutateAsync(data);
     }
-    router.push("/lobby");
+    const invitationQuery = `?invite=${String(router.query.invite)}`;
+    router.push(`/lobby${router.query.invite ? invitationQuery : ""}`);
   };
 
   return (
     <>
-      <Stack sx={{ m: 5 }}>
-        <TextField
-          sx={{ pb: 3 }}
-          id="outlined-basic"
-          label="name"
-          variant="outlined"
-          value={editedProfile.user_name}
-          onChange={(e) =>
-            update({
-              ...editedProfile,
-              user_name: e.target.value,
-              avatar_url: "", // TODO: add avatar_url
-            })
-          }
-        />
+      <Stack sx={{ m: 2 }}>
+        <Stack spacing={1} sx={{ pb: 3 }} direction="row" alignItems="center">
+          <Avatar>
+            <PersonIcon />
+          </Avatar>
+          <TextField
+            id="outlined-basic"
+            label="Your name"
+            variant="outlined"
+            value={editedProfile.user_name}
+            onChange={(e) =>
+              update({
+                ...editedProfile,
+                user_name: e.target.value,
+                avatar_url: "", // TODO: add avatar_url
+              })
+            }
+          />
+        </Stack>
         <Button
           variant="contained"
           size="large"

@@ -52,14 +52,32 @@ export const CardSlot = ({
   const targetStyle = getStyle(isFaceUp, isPlaced, color);
   return (
     <>
-      <Stack direction="column">
+      <Stack direction="column" alignItems="center">
         <div style={targetStyle}>{isFaceUp && <p>{value}</p>}</div>
         {isLoginUser ? (
-          <b style={{ marginTop: 5, textAlign: "center", fontSize: 15 }}>
+          <b
+            style={{
+              marginTop: 5,
+              textAlign: "center",
+              fontSize: 15,
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+              width: "80px",
+            }}
+          >
             {name}
           </b>
         ) : (
-          <p style={{ marginTop: 5, textAlign: "center", fontSize: 15 }}>
+          <p
+            style={{
+              marginTop: 5,
+              textAlign: "center",
+              fontSize: 15,
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+              width: "80px",
+            }}
+          >
             {name}
           </p>
         )}
