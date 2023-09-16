@@ -10,18 +10,23 @@ export const useMutateProfile = () => {
     async (profile: Omit<Profile, "id" | "created_at">) => {
       const { data, error } = await supabase
         .from("profiles")
-        .update(profile)
+        .insert(profile)
         .order("created_at", { ascending: false })
-        .select()
-        .limit(1)
-        .maybeSingle();
+        .select();
 
       if (error) throw new Error(error.message);
       return data;
     },
     {
-      onSuccess: (data: Profile) => {
-        queryClient.setQueryData<Profile>(["profile"], data);
+      onSuccess: (data: Profile[]) => {
+        let previousProfiles = queryClient.getQueryData<Profile[]>([
+          "profiles",
+        ]);
+        if (!previousProfiles) {
+          previousProfiles = [];
+        }
+        const newProfiles = [...previousProfiles, ...data];
+        queryClient.setQueryData<Profile[]>(["profiles"], newProfiles);
       },
       onError: (err: any) => {
         alert(err.message);
@@ -33,6 +38,7 @@ export const useMutateProfile = () => {
       const { data, error } = await supabase
         .from("profiles")
         .update({ user_name: profile.user_name })
+        .order("created_at", { ascending: false })
         .eq("id", profile.id)
         .select()
         .limit(1)
@@ -43,7 +49,19 @@ export const useMutateProfile = () => {
     },
     {
       onSuccess: (data: Profile) => {
-        queryClient.setQueryData<Profile>(["profile"], data);
+        let previousProfiles = queryClient.getQueryData<Profile[]>([
+          "profiles",
+        ]);
+        console.log({ previousProfiles });
+        if (!previousProfiles) {
+          previousProfiles = [];
+        }
+        const newProfiles = previousProfiles.map((profile) => {
+          if (profile.id === data.id) return data;
+          return profile;
+        });
+        console.log({ newProfiles });
+        queryClient.setQueryData<Profile[]>(["profiles"], newProfiles);
       },
       onError: (err: any) => {
         alert(err.message);

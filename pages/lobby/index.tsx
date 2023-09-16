@@ -11,9 +11,9 @@ import useStore from "../../store";
 
 export default function Lobby() {
   const updateRoom = useStore((state) => state.setCurrentRoomId);
+  const editedProfile = useStore((state) => state.editedProfile);
   const { createAdmissionMutation } = useMutateAdmission();
-  const { data: profile } = useQueryProfile();
-
+  const { data: profiles } = useQueryProfile();
   const user = useUser();
   const router = useRouter();
 
@@ -21,6 +21,8 @@ export default function Lobby() {
   const [invitationRoomId, setInvitationRoomId] = useState<string | undefined>(
     undefined
   );
+
+  const profile = profiles?.find((profile) => profile.id === user?.id);
 
   useEffect(() => {
     setIsClient(true);
@@ -60,7 +62,7 @@ export default function Lobby() {
       {isClient && (
         <>
           <Typography sx={{ m: 2 }} variant="h5" textAlign="center">
-            {profile?.user_name}
+            {editedProfile.user_name || profile?.user_name}
             <IconButton sx={{ ml: 1 }} size="small" onClick={handleEditClick}>
               <EditIcon />
             </IconButton>

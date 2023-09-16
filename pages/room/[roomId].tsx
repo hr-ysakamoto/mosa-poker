@@ -10,6 +10,7 @@ import useStore from "../../store";
 import { useQueryRoom } from "../../hooks/useQueryRoom";
 import { useQueryAdmission } from "../../hooks/useQueryAdmission";
 import { useQueryDeck } from "../../hooks/useQueryDeck";
+import { useQueryProfile } from "../../hooks/useQueryProfile";
 import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
@@ -36,6 +37,8 @@ export default function RoomPage() {
   const { data: rooms } = useQueryRoom();
   const { data: admissions } = useQueryAdmission();
   const { data: decks } = useQueryDeck();
+  const { data: profiles } = useQueryProfile();
+  console.log("[room.id] profiles: ", profiles);
 
   useSubscribeRoom(roomId!);
   useSubscribeAdmissions(roomId!);
@@ -67,10 +70,10 @@ export default function RoomPage() {
 
   // セッションが切れていたらトップページにリダイレクト
   useEffect(() => {
-    if (!user) {
+    if (!user && router.isReady) {
       router.replace("/");
     }
-  }, [user, router]);
+  }, [user, router, roomId]);
 
   /**
    * Exitボタンクリックイベント
@@ -156,12 +159,6 @@ export default function RoomPage() {
     setOpen(false);
   };
 
-  // TODO: useQueryに置き換える
-  const userProfiles = [
-    { id: "9bf2e07f-e5f8-46db-8d62-fced65643455", name: "Yuki" },
-    { id: "55ac9087-321e-451f-b964-2f9e9d72cccf", name: "mossari" },
-  ];
-
   const loginUserSession = admissions?.find(
     (admission) =>
       admission.room_id === roomId && admission.user_id === user?.id
@@ -227,19 +224,19 @@ export default function RoomPage() {
               ?.sort((a, b) => (a.id > b.id ? 1 : -1))
               .flatMap((admission) => {
                 if (admission.room_id !== roomId) return [];
-                const userProfile = userProfiles.find(
-                  (profile) => profile.id === admission.user_id
-                );
                 const color = targetDeck.find(
                   (x) => x.value === admission.card
                 )?.color;
+                const userName = profiles?.find(
+                  (profile) => profile.id === admission.user_id
+                )?.user_name;
                 return (
                   <CardSlot
                     key={admission.id}
                     isFaceUp={room?.status === "Up"}
                     isPlaced={admission.card !== ""}
                     isLoginUser={admission.user_id === user?.id}
-                    name={userProfile?.name || ""}
+                    name={userName || ""}
                     value={admission.card || ""}
                     color={color || "#eeeeee"}
                   />
