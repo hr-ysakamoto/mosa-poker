@@ -2,25 +2,28 @@ import { useEffect } from "react";
 import { useQueryClient } from "react-query";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Admission } from "../types";
+import { AdmissionQueryKey } from "../lib";
+
+const TABLE_NAME = "admissions" as const;
 
 export const useSubscribeAdmissions = (roomId: string) => {
   const queryClient = useQueryClient();
   const supabase = useSupabaseClient();
   useEffect(() => {
     const subscription = supabase
-      .channel(`public:admissions`)
+      .channel(`public:${TABLE_NAME}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "admissions",
+          table: TABLE_NAME,
           filter: `room_id=eq.${roomId}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
             let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              "admissions",
+              AdmissionQueryKey,
             ]);
             if (!previousAdmissions) {
               previousAdmissions = [];
@@ -36,12 +39,12 @@ export const useSubscribeAdmissions = (roomId: string) => {
               },
             ];
             queryClient.setQueryData<Admission[]>(
-              ["admissions"],
+              [AdmissionQueryKey],
               newAdmissions
             );
           } else if (payload.eventType === "UPDATE") {
             let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              "admissions",
+              AdmissionQueryKey,
             ]);
             if (!previousAdmissions) {
               previousAdmissions = [];
@@ -57,12 +60,12 @@ export const useSubscribeAdmissions = (roomId: string) => {
               return admission;
             });
             queryClient.setQueryData<Admission[]>(
-              ["admissions"],
+              [AdmissionQueryKey],
               newAdmissions
             );
           } else if (payload.eventType === "DELETE") {
             let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              "admissions",
+              AdmissionQueryKey,
             ]);
             if (!previousAdmissions) {
               previousAdmissions = [];
@@ -71,7 +74,7 @@ export const useSubscribeAdmissions = (roomId: string) => {
               (admission) => admission.id !== payload.old.id
             );
             queryClient.setQueryData<Admission[]>(
-              ["admissions"],
+              [AdmissionQueryKey],
               newAdmissions
             );
           }

@@ -19,7 +19,7 @@ const cardStyle = {
 
 const selectedCardStyle = {
   ...commonStyle,
-  border: "2px solid skyblue",
+  border: "2px solid #556bd6",
   position: "relative",
   bottom: 15,
 };

@@ -1,12 +1,15 @@
 import { useQuery } from "react-query";
 import { Admission } from "../types";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { AdmissionQueryKey } from "../lib";
+
+const TABLE_NAME = "admissions" as const;
 
 export const useQueryAdmission = () => {
   const supabase = useSupabaseClient();
   const getAdmissions = async (): Promise<Admission[]> => {
     const { data, error } = await supabase
-      .from("admissions")
+      .from(TABLE_NAME)
       .select()
       .order("created_at", { ascending: false });
 
@@ -16,7 +19,7 @@ export const useQueryAdmission = () => {
     return data;
   };
   return useQuery<Admission[], Error>({
-    queryKey: ["admissions"],
+    queryKey: [AdmissionQueryKey],
     queryFn: getAdmissions,
     staleTime: Infinity,
   });

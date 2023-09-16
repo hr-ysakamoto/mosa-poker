@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { useQueryClient } from "react-query";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Room } from "../types";
+import { RoomQueryKey } from "../lib";
+
+const TABLE_NAME = "rooms" as const;
 
 export const useSubscribeRoom = (roomId: string) => {
   const queryClient = useQueryClient();
@@ -15,12 +18,14 @@ export const useSubscribeRoom = (roomId: string) => {
         {
           event: "*",
           schema: "public",
-          table: "rooms",
+          table: TABLE_NAME,
           filter: `id=eq.${roomId}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            let previousRooms = queryClient.getQueryData<Room[]>([
+              RoomQueryKey,
+            ]);
             if (!previousRooms) {
               previousRooms = [];
             }
@@ -35,9 +40,11 @@ export const useSubscribeRoom = (roomId: string) => {
                 deck_id: payload.new.deck_id,
               },
             ];
-            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+            queryClient.setQueryData<Room[]>([RoomQueryKey], newRooms);
           } else if (payload.eventType === "UPDATE") {
-            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            let previousRooms = queryClient.getQueryData<Room[]>([
+              RoomQueryKey,
+            ]);
             if (!previousRooms) {
               previousRooms = [];
             }
@@ -52,16 +59,18 @@ export const useSubscribeRoom = (roomId: string) => {
               }
               return room;
             });
-            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+            queryClient.setQueryData<Room[]>([RoomQueryKey], newRooms);
           } else if (payload.eventType === "DELETE") {
-            let previousRooms = queryClient.getQueryData<Room[]>(["rooms"]);
+            let previousRooms = queryClient.getQueryData<Room[]>([
+              RoomQueryKey,
+            ]);
             if (!previousRooms) {
               previousRooms = [];
             }
             const newRooms = previousRooms.filter(
               (room) => room.id !== payload.old.id
             );
-            queryClient.setQueryData<Room[]>(["rooms"], newRooms);
+            queryClient.setQueryData<Room[]>([RoomQueryKey], newRooms);
           }
         }
       )
