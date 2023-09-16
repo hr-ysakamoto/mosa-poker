@@ -10,7 +10,7 @@ export const useMutateProfile = () => {
   const supabase = useSupabaseClient();
 
   const createProfileMutation = useMutation(
-    async (profile: Omit<Profile, "id" | "created_at">) => {
+    async (profile: Omit<Profile, "created_at">) => {
       const { data, error } = await supabase
         .from(TABLE_NAME)
         .insert(profile)

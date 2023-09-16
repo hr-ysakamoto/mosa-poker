@@ -12,15 +12,21 @@ export default function Profile() {
   const update = useStore((state) => state.updateEditedProfile);
   const router = useRouter();
   const user = useUser();
+  const profile = profiles?.find((profile) => profile.id === user?.id);
 
-  const { updateProfileMutation } = useMutateProfile();
+  const { createProfileMutation, updateProfileMutation } = useMutateProfile();
 
   const handleUpdateClick = async (e: any) => {
     e.preventDefault();
-    await updateProfileMutation.mutateAsync({
+    const data = {
       id: user!.id,
       ...editedProfile,
-    });
+    };
+    if (profile) {
+      await updateProfileMutation.mutateAsync(data);
+    } else {
+      await createProfileMutation.mutateAsync(data);
+    }
     router.push("/lobby");
   };
 
