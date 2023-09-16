@@ -12,7 +12,6 @@ export default function Profile() {
   const update = useStore((state) => state.updateEditedProfile);
   const router = useRouter();
   const user = useUser();
-  console.log({ profiles });
 
   const { updateProfileMutation } = useMutateProfile();
 

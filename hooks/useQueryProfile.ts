@@ -6,7 +6,6 @@ export const useQueryProfile = () => {
   const supabase = useSupabaseClient();
   const getProfile = async (): Promise<Profile[]> => {
     const { data, error } = await supabase.from("profiles").select();
-    console.log({ data });
     if (error) {
       throw new Error(error.message);
     }

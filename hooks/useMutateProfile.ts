@@ -52,7 +52,6 @@ export const useMutateProfile = () => {
         let previousProfiles = queryClient.getQueryData<Profile[]>([
           "profiles",
         ]);
-        console.log({ previousProfiles });
         if (!previousProfiles) {
           previousProfiles = [];
         }
@@ -60,7 +59,6 @@ export const useMutateProfile = () => {
           if (profile.id === data.id) return data;
           return profile;
         });
-        console.log({ newProfiles });
         queryClient.setQueryData<Profile[]>(["profiles"], newProfiles);
       },
       onError: (err: any) => {

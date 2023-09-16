@@ -38,7 +38,6 @@ export default function RoomPage() {
   const { data: admissions } = useQueryAdmission();
   const { data: decks } = useQueryDeck();
   const { data: profiles } = useQueryProfile();
-  console.log("[room.id] profiles: ", profiles);
 
   useSubscribeRoom(roomId!);
   useSubscribeAdmissions(roomId!);
