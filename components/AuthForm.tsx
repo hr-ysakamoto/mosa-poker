@@ -19,7 +19,7 @@ export const AuthForm: FC = () => {
         },
       }}
       appearance={{ theme: ThemeSupa }}
-      providers={[]} // TODO: Google認証に対応する
+      providers={["google"]} // TODO: Google認証に対応する
     />
   );
 };
