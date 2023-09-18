@@ -1,11 +1,11 @@
 import React from "react";
-import { Avatar, Button, Stack, TextField } from "@mui/material";
-import useStore from "../../store";
 import { useRouter } from "next/router";
-import { useMutateProfile } from "../../hooks/useMutateProfile";
-import { useUser } from "@supabase/auth-helpers-react";
-import { useQueryProfile } from "../../hooks/useQueryProfile";
+import { Avatar, Button, Stack, TextField } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
+import { useUser } from "@supabase/auth-helpers-react";
+import useStore from "../../store";
+import { useMutateProfile } from "../../hooks/useMutateProfile";
+import { useQueryProfile } from "../../hooks/useQueryProfile";
 
 export default function Profile() {
   const { data: profiles } = useQueryProfile();

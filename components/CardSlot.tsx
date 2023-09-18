@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import React from "react";
 
 const common = {
@@ -11,20 +11,22 @@ const common = {
   justifyContent: "center",
   alignItems: "center",
 };
+const placedStyle = { boxShadow: "0px 10px 10px -6px rgba(0, 0, 0, 0.3)" };
+
 const upStyle = {
   ...common,
-  boxShadow: "0px 10px 10px -6px rgba(0, 0, 0, 0.3)",
+  ...placedStyle,
 };
 const downStyle = {
   ...common,
+  ...placedStyle,
   border: "1px solid #bbbbbb",
   backgroundColor: "#cccccc",
-  boxShadow: "0px 10px 10px -6px rgba(0, 0, 0, 0.3)",
 };
 const notPlacedStyle = {
   ...common,
   border: "1px dashed #dddddd",
-  backgroundColor: "#fcfcfc",
+  backgroundColor: "transparent",
 };
 
 const getStyle = (isFaceUp: boolean, isPlaced: boolean, color: string) => {
@@ -55,7 +57,7 @@ export const CardSlot = ({
       <Stack direction="column" alignItems="center">
         <div style={targetStyle}>{isFaceUp && <p>{value}</p>}</div>
         {isLoginUser ? (
-          <b
+          <Typography
             style={{
               marginTop: 5,
               textAlign: "center",
@@ -66,7 +68,7 @@ export const CardSlot = ({
             }}
           >
             {name}
-          </b>
+          </Typography>
         ) : (
           <p
             style={{

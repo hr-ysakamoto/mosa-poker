@@ -15,8 +15,7 @@ import { useSubscribeRoom } from "../../hooks/useSubscribeRoom";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
 import { useMutateRoom } from "../../hooks/useMutateRoom";
 import { useSubscribeAdmissions } from "../../hooks/useSubscribeAdmissions";
-import { CardSlot, Hand } from "../../components";
-import { SignOutButton } from "../../components/SignOutButton";
+import { CardSlot, Hand, SignOutButton } from "../../components";
 import { Room } from "../../types";
 import { DEFAULT_DECK_ID } from "../../lib";
 

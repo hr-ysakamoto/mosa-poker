@@ -3,11 +3,10 @@ import { useRouter } from "next/router";
 import { useUser } from "@supabase/auth-helpers-react";
 import { Avatar, IconButton, Stack, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
 import { useQueryProfile } from "../../hooks/useQueryProfile";
 import { useMutateAdmission } from "../../hooks/useMutateAdmission";
-import { InvitationForm } from "../../components/InvitationForm";
-import { CreateRoomForm } from "../../components/CreateRoomForm";
-import PersonIcon from "@mui/icons-material/Person";
+import { CreateRoomForm, InvitationForm } from "../../components";
 import useStore from "../../store";
 
 export default function Lobby() {
