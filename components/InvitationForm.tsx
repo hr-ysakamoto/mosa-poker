@@ -1,6 +1,7 @@
-import React from "react";
-import { Button, Stack, Typography } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import { Button, Stack, Typography } from "@mui/material";
+import React from "react";
+
 import { SignOutButton } from "./SignOutButton";
 
 interface InvitationFormProps {

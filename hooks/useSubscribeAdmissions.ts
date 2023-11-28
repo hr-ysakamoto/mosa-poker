@@ -1,8 +1,9 @@
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
 import { useQueryClient } from "react-query";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Admission } from "../types";
+
 import { AdmissionQueryKey } from "../lib";
+import { Admission } from "../types";
 
 const TABLE_NAME = "admissions" as const;
 

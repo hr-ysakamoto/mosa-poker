@@ -1,7 +1,8 @@
-import { useMutation, useQueryClient } from "react-query";
-import { Profile } from "../types";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useMutation, useQueryClient } from "react-query";
+
 import { ProfileQueryKey } from "../lib";
+import { Profile } from "../types";
 
 const TABLE_NAME = "profiles" as const;
 

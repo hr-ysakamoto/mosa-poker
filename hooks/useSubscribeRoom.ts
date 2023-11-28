@@ -1,8 +1,9 @@
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
 import { useQueryClient } from "react-query";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Room } from "../types";
+
 import { RoomQueryKey } from "../lib";
+import { Room } from "../types";
 
 const TABLE_NAME = "rooms" as const;
 

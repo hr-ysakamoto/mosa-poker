@@ -1,7 +1,7 @@
-import { FC } from "react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { FC } from "react";
 
 export const AuthForm: FC = () => {
   const supabaseClient = useSupabaseClient();

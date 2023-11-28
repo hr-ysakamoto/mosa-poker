@@ -1,9 +1,10 @@
-import { useEffect } from "react";
-import { AuthForm, Layout } from "../components";
-import { useUser } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
-import { GetServerSidePropsContext } from "next";
 import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
+import { useUser } from "@supabase/auth-helpers-react";
+import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+import { AuthForm, Layout } from "../components";
 
 export default function Index() {
   const user = useUser();

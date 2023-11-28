@@ -1,7 +1,8 @@
-import { useQuery } from "react-query";
-import { Deck } from "../types/";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useQuery } from "react-query";
+
 import { DeckQueryKey } from "../lib";
+import { Deck } from "../types/";
 
 const VIEW_NAME = "view_decks" as const;
 

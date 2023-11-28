@@ -1,8 +1,9 @@
-import React from "react";
-import { useRouter } from "next/router";
-import { Button } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { Button } from "@mui/material";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
+import React from "react";
+
 import { useMutateAdmission } from "../hooks/useMutateAdmission";
 
 export const SignOutButton = () => {

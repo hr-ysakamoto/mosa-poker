@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { EditedProfile, EditedRoom } from "../types";
 
 type State = {

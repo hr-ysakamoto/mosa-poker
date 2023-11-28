@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { CacheProvider, EmotionCache } from "@emotion/react";
+import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "react-query";
 import Head from "next/head";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
-import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+
 import "../styles/global.scss";
-import theme from "../lib/theme";
 import createEmotionCache from "../lib/createEmotionCache";
-import { CacheProvider, EmotionCache } from "@emotion/react";
+import theme from "../lib/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
