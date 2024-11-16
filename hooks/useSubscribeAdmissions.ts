@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "react-query";
 
 import { AdmissionQueryKey } from "../lib";
-import { Admission } from "../types";
+import { AdmissionWithName } from "../types";
 
 const TABLE_NAME = "admissions" as const;
 
@@ -23,9 +23,9 @@ export const useSubscribeAdmissions = (roomId: string) => {
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              AdmissionQueryKey,
-            ]);
+            let previousAdmissions = queryClient.getQueryData<
+              AdmissionWithName[]
+            >([AdmissionQueryKey]);
             if (!previousAdmissions) {
               previousAdmissions = [];
             }
@@ -35,18 +35,19 @@ export const useSubscribeAdmissions = (roomId: string) => {
                 id: payload.new.id,
                 created_at: payload.new.created_at,
                 user_id: payload.new.user_id,
+                user_name: payload.new.user_name,
                 room_id: payload.new.room_id,
                 card: payload.new.card,
               },
             ];
-            queryClient.setQueryData<Admission[]>(
+            queryClient.setQueryData<AdmissionWithName[]>(
               [AdmissionQueryKey],
               newAdmissions
             );
           } else if (payload.eventType === "UPDATE") {
-            let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              AdmissionQueryKey,
-            ]);
+            let previousAdmissions = queryClient.getQueryData<
+              AdmissionWithName[]
+            >([AdmissionQueryKey]);
             if (!previousAdmissions) {
               previousAdmissions = [];
             }
@@ -55,26 +56,27 @@ export const useSubscribeAdmissions = (roomId: string) => {
                 admission.id = payload.new.id;
                 admission.created_at = payload.new.created_at;
                 admission.user_id = payload.new.user_id;
+                admission.user_name = payload.new.user_name;
                 admission.room_id = payload.new.room_id;
                 admission.card = payload.new.card;
               }
               return admission;
             });
-            queryClient.setQueryData<Admission[]>(
+            queryClient.setQueryData<AdmissionWithName[]>(
               [AdmissionQueryKey],
               newAdmissions
             );
           } else if (payload.eventType === "DELETE") {
-            let previousAdmissions = queryClient.getQueryData<Admission[]>([
-              AdmissionQueryKey,
-            ]);
+            let previousAdmissions = queryClient.getQueryData<
+              AdmissionWithName[]
+            >([AdmissionQueryKey]);
             if (!previousAdmissions) {
               previousAdmissions = [];
             }
             const newAdmissions = previousAdmissions.filter(
               (admission) => admission.id !== payload.old.id
             );
-            queryClient.setQueryData<Admission[]>(
+            queryClient.setQueryData<AdmissionWithName[]>(
               [AdmissionQueryKey],
               newAdmissions
             );

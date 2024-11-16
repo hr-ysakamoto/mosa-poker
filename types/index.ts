@@ -31,6 +31,10 @@ export type Admission = {
   card: string;
 };
 
+export type AdmissionWithName = Admission & {
+  user_name: string;
+};
+
 export type Deck = {
   deck_id: number;
   name: string;
